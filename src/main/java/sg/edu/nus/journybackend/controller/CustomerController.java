@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import sg.edu.nus.journybackend.dto.CustomerDto;
 import sg.edu.nus.journybackend.dto.LoginDto;
-import sg.edu.nus.journybackend.exception.CustomerNotFoundException;
+import sg.edu.nus.journybackend.exception.ResourceNotFoundException;
 import sg.edu.nus.journybackend.exception.InvalidLoginCredentialException;
 import sg.edu.nus.journybackend.service.CustomerService;
 
@@ -44,7 +44,7 @@ public class CustomerController {
             return new ResponseEntity<>(loginCustomer, HttpStatus.OK);
         } catch (InvalidLoginCredentialException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
-        } catch (CustomerNotFoundException e) {
+        } catch (ResourceNotFoundException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }

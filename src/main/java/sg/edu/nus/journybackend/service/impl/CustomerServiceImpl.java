@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import sg.edu.nus.journybackend.dto.CustomerDto;
 import sg.edu.nus.journybackend.entity.Customer;
-import sg.edu.nus.journybackend.exception.CustomerNotFoundException;
+import sg.edu.nus.journybackend.exception.ResourceNotFoundException;
 import sg.edu.nus.journybackend.exception.InvalidLoginCredentialException;
 import sg.edu.nus.journybackend.mapper.CustomerMapper;
 import sg.edu.nus.journybackend.repository.CustomerRepository;
@@ -40,7 +40,7 @@ public class CustomerServiceImpl implements CustomerService {
         boolean customerExist = customerRepository.findByUsername(username).isPresent();
 
         if (!customerExist) {
-            throw new CustomerNotFoundException("Customer with username " + username + " does not exist!");
+            throw new ResourceNotFoundException("Customer with username " + username + " does not exist!");
         } else {
             Customer customer = customerRepository.findByUsername(username).get();
 
