@@ -39,17 +39,17 @@ public class PostController {
         }
     }
 
-    @DeleteMapping("/{postId}")
-    public ResponseEntity<?> deletePost(@PathVariable("postId") String postId) {
-        try {
-            postService.deletePost(postId);
-            return ResponseEntity.ok(String.format("PostID: %s deleted successfully", postId));
-        } catch (ResourceNotFoundException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-        } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
-    }
+//    @DeleteMapping("/{postId}")
+//    public ResponseEntity<?> deletePost(@PathVariable("postId") String postId) {
+//        try {
+//            postService.deletePost(postId);
+//            return ResponseEntity.ok(String.format("PostID: %s deleted successfully", postId));
+//        } catch (ResourceNotFoundException e) {
+//            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+//        } catch (Exception e) {
+//            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+//        }
+//    }
     @GetMapping("/user/{username}")
     public ResponseEntity<?> retrievePostsByUsername(@PathVariable("username") String username) {
         try {

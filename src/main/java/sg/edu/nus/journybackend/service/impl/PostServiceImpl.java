@@ -5,10 +5,8 @@ import org.springframework.stereotype.Service;
 import sg.edu.nus.journybackend.dto.PostDto;
 import sg.edu.nus.journybackend.entity.Customer;
 import sg.edu.nus.journybackend.entity.Post;
-import sg.edu.nus.journybackend.entity.Comment;
 import sg.edu.nus.journybackend.exception.ResourceNotFoundException;
 import sg.edu.nus.journybackend.mapper.PostMapper;
-import sg.edu.nus.journybackend.repository.CommentRepository;
 import sg.edu.nus.journybackend.repository.CustomerRepository;
 import sg.edu.nus.journybackend.repository.PostRepository;
 import sg.edu.nus.journybackend.service.PostService;
@@ -22,7 +20,7 @@ public class PostServiceImpl implements PostService {
 
     private CustomerRepository customerRepository;
     private PostRepository postRepository;
-    private CommentRepository commentRepository;
+    // private CommentRepository commentRepository;
 
     @Override
     //Whenever someone first creates a post, the post will have 0 comments.
@@ -60,28 +58,28 @@ public class PostServiceImpl implements PostService {
         return PostMapper.mapToPostDto(currPost);
     }
 
-    @Override
-    public void deletePost(String postId) {
-        Post toBeDeleted = postRepository.findById(postId)
-                .orElseThrow(() -> new ResourceNotFoundException("Post not found with id: " + postId));
-
-        //Delete all associated comments with the post
-        //Doesn't work
-        List<Comment> commentList = toBeDeleted.getCommentList();
-        for (Comment comment : commentList) {
-            comment.getCommenter().getComments().removeIf(c -> c.getCommentId().equals(comment.getCommentId()));
-            // commentService.deleteComment(comment.getCommentId());
-        }
-        commentRepository.deleteAll(commentList);
-
-        Customer creator = toBeDeleted.getCreator();
-        if (creator != null && creator.getPosts() != null) {
-            creator.getPosts().removeIf(p -> p.getPostId().equals(postId));
-            customerRepository.save(creator);
-        }
-
-        postRepository.deleteById(postId);
-    }
+//    @Override
+//    public void deletePost(String postId) {
+//        Post toBeDeleted = postRepository.findById(postId)
+//                .orElseThrow(() -> new ResourceNotFoundException("Post not found with id: " + postId));
+//
+//        //Delete all associated comments with the post
+//        //Doesn't work
+//        List<Comment> commentList = toBeDeleted.getCommentList();
+//        for (Comment comment : commentList) {
+//            comment.getCommenter().getComments().removeIf(c -> c.getCommentId().equals(comment.getCommentId()));
+//            // commentService.deleteComment(comment.getCommentId());
+//        }
+//        commentRepository.deleteAll(commentList);
+//
+//        Customer creator = toBeDeleted.getCreator();
+//        if (creator != null && creator.getPosts() != null) {
+//            creator.getPosts().removeIf(p -> p.getPostId().equals(postId));
+//            customerRepository.save(creator);
+//        }
+//
+//        postRepository.deleteById(postId);
+//    }
 
     @Override
     public List<PostDto> retrievePostsByUsername(String username) {
