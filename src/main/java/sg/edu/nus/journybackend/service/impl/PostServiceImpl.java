@@ -11,7 +11,6 @@ import sg.edu.nus.journybackend.mapper.PostMapper;
 import sg.edu.nus.journybackend.repository.CommentRepository;
 import sg.edu.nus.journybackend.repository.CustomerRepository;
 import sg.edu.nus.journybackend.repository.PostRepository;
-import sg.edu.nus.journybackend.service.CommentService;
 import sg.edu.nus.journybackend.service.PostService;
 
 import java.util.ArrayList;
@@ -24,7 +23,6 @@ public class PostServiceImpl implements PostService {
     private CustomerRepository customerRepository;
     private PostRepository postRepository;
     private CommentRepository commentRepository;
-    private CommentService commentService;
 
     @Override
     //Whenever someone first creates a post, the post will have 0 comments.

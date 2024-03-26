@@ -7,7 +7,6 @@ import lombok.Setter;
 import sg.edu.nus.journybackend.entity.Comment;
 import sg.edu.nus.journybackend.entity.Post;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Getter

@@ -1,6 +1,5 @@
 package sg.edu.nus.journybackend.service.impl;
 
-import jakarta.annotation.Resource;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import sg.edu.nus.journybackend.entity.Comment;
