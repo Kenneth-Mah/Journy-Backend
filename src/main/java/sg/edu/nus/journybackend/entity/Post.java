@@ -6,29 +6,30 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Document("customers")
-public class Customer {
+@Document("post")
+public class Post {
     @Id
-    private String id;
+    private String postId;
+    private Date createdDateTime;
+    private Integer likeCount;
 
-    @Indexed(unique = true)
-    private String username;
-    private String password;
-    private String name;
-    @Indexed(unique = true)
-    private String email;
+    @DBRef
+    private KMLFile kmlFile;
+
+    @DBRef
+    private Customer creator;
 
     @JsonIgnore
-    private List<Comment> comments;
-    @JsonIgnore
-    private List<Post> posts;
+    private List<Comment> commentList;
 }
