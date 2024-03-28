@@ -1,30 +1,30 @@
-package sg.edu.nus.journybackend.mapper;
-
-import sg.edu.nus.journybackend.dto.CustomerDto;
-import sg.edu.nus.journybackend.entity.Customer;
-
-public class CustomerMapper {
-    public static CustomerDto mapToCustomerDto(Customer customer) {
-        return new CustomerDto(
-                customer.getId(),
-                customer.getUsername(),
-                customer.getPassword(),
-                customer.getName(),
-                customer.getEmail(),
-                customer.getComments(),
-                customer.getPosts()
-        );
-    }
-
-    public static Customer mapToCustomer(CustomerDto customerDto) {
-        return new Customer(
-                customerDto.getId(),
-                customerDto.getUsername(),
-                customerDto.getPassword(),
-                customerDto.getName(),
-                customerDto.getEmail(),
-                customerDto.getComments(),
-                customerDto.getPosts()
-        );
-    }
-}
+//package sg.edu.nus.journybackend.mapper;
+//
+//import sg.edu.nus.journybackend.dto.MemberDto;
+//import sg.edu.nus.journybackend.entity.Member;
+//
+//public class CustomerMapper {
+//    public static MemberDto mapToCustomerDto(Member member) {
+//        return new MemberDto(
+//                member.getMemberId(),
+//                member.getUsername(),
+//                member.getPassword(),
+//                member.getName(),
+//                member.getEmail(),
+//                member.getComments(),
+//                member.getPosts()
+//        );
+//    }
+//
+//    public static Member mapToCustomer(MemberDto memberDto) {
+//        return new Member(
+//                memberDto.getMemberId(),
+//                memberDto.getUsername(),
+//                memberDto.getPassword(),
+//                memberDto.getName(),
+//                memberDto.getEmail(),
+//                memberDto.getComments(),
+//                memberDto.getPosts()
+//        );
+//    }
+//}

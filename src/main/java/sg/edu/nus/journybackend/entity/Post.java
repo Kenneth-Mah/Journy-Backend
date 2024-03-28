@@ -1,13 +1,10 @@
 package sg.edu.nus.journybackend.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.DBRef;
-import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Date;
 import java.util.List;
@@ -16,19 +13,20 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Document("post")
+@Entity
+@Table(name = "post")
 public class Post {
     @Id
-    private String postId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long postId;
+    @Temporal(TemporalType.TIMESTAMP)
     private Date createdDateTime;
     private Integer likeCount;
 
-    @DBRef
+    @OneToOne(mappedBy = "post")
     private KMLFile kmlFile;
-
-    @DBRef
-    private Customer creator;
-
-    @JsonIgnore
-    private List<Comment> commentList;
+    @ManyToOne
+    private Member creator;
+    @OneToMany(mappedBy = "post")
+    private List<Comment> comments;
 }
