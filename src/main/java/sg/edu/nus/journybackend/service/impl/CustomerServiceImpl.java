@@ -10,6 +10,8 @@ import sg.edu.nus.journybackend.mapper.CustomerMapper;
 import sg.edu.nus.journybackend.repository.CustomerRepository;
 import sg.edu.nus.journybackend.service.CustomerService;
 
+import java.util.ArrayList;
+
 @Service
 @AllArgsConstructor
 public class CustomerServiceImpl implements CustomerService {
@@ -18,6 +20,9 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public CustomerDto createCustomer(CustomerDto customerDto) {
+        customerDto.setComments(new ArrayList<>());
+        customerDto.setPosts(new ArrayList<>());
+
         Customer customer = CustomerMapper.mapToCustomer(customerDto);
         Customer savedCustomer = customerRepository.save(customer);
         return CustomerMapper.mapToCustomerDto(savedCustomer);

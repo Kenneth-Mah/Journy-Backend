@@ -10,7 +10,9 @@ public class CustomerMapper {
                 customer.getUsername(),
                 customer.getPassword(),
                 customer.getName(),
-                customer.getEmail()
+                customer.getEmail(),
+                customer.getComments(),
+                customer.getPosts()
         );
     }
 
@@ -20,7 +22,9 @@ public class CustomerMapper {
                 customerDto.getUsername(),
                 customerDto.getPassword(),
                 customerDto.getName(),
-                customerDto.getEmail()
+                customerDto.getEmail(),
+                customerDto.getComments(),
+                customerDto.getPosts()
         );
     }
 }
