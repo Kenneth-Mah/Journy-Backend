@@ -1,103 +1,105 @@
-//package sg.edu.nus.journybackend.service.impl;
-//
-//import lombok.AllArgsConstructor;
-//import org.springframework.stereotype.Service;
-//import sg.edu.nus.journybackend.dto.PostDto;
-//import sg.edu.nus.journybackend.entity.Member;
-//import sg.edu.nus.journybackend.entity.Post;
-//import sg.edu.nus.journybackend.exception.ResourceNotFoundException;
-//import sg.edu.nus.journybackend.mapper.KMLFileMapper;
-//import sg.edu.nus.journybackend.mapper.PostMapper;
-//import sg.edu.nus.journybackend.repository.CustomerRepository;
-//import sg.edu.nus.journybackend.repository.PostRepository;
-//import sg.edu.nus.journybackend.service.PostService;
-//
-//import java.util.ArrayList;
-//import java.util.List;
-//import java.util.stream.Collectors;
-//@Service
-//@AllArgsConstructor
-//public class PostServiceImpl implements PostService {
-//
-//    private CustomerRepository customerRepository;
-//    private PostRepository postRepository;
-//    // private CommentRepository commentRepository;
-//
+package sg.edu.nus.journybackend.service.impl;
+
+import lombok.AllArgsConstructor;
+import org.springframework.stereotype.Service;
+import sg.edu.nus.journybackend.entity.Member;
+import sg.edu.nus.journybackend.entity.Post;
+import sg.edu.nus.journybackend.exception.InvalidCredentialException;
+import sg.edu.nus.journybackend.exception.ResourceNotFoundException;
+import sg.edu.nus.journybackend.repository.MemberRepository;
+import sg.edu.nus.journybackend.repository.PostRepository;
+import sg.edu.nus.journybackend.service.PostService;
+
+import java.util.List;
+@Service
+@AllArgsConstructor
+public class PostServiceImpl implements PostService {
+
+    private MemberRepository memberRepository;
+    private PostRepository postRepository;
+    // private CommentRepository commentRepository;
+
+    @Override
+    //Whenever someone first creates a post, the post will have 0 comments.
+    public Post createPost(Long memberId, Post newPost) {
+        Member creator = memberRepository.findById(memberId)
+                .orElseThrow(() -> new ResourceNotFoundException("Member not found with id: " + memberId));
+        newPost.setCreator(creator);
+        postRepository.save(newPost);
+
+        creator.getPosts().add(newPost);
+        memberRepository.save(creator);
+
+        return newPost;
+    }
+
+    @Override
+    public Post updatePost(Long memberId, Long postId, Post editedPost) {
+        Post persistedPost = postRepository.findById(postId)
+                .orElseThrow(() -> new ResourceNotFoundException("Post not found with id: " + postId));
+
+        //Check if the member is the creator of the post
+        if (!persistedPost.getCreator().getMemberId().equals(memberId)) {
+            throw new InvalidCredentialException("Member not authorized to update post with id: " + postId);
+        }
+
+        //Post createdDateTime cannot be changed
+        //Post id cannot be changed
+        //Post creator cannot be changed
+        persistedPost.setLikeCount(editedPost.getLikeCount());
+        persistedPost.setKmlFile(editedPost.getKmlFile());
+        // currPost.setCommentList(postDto.getCommentList());
+        postRepository.save(persistedPost);
+
+        return persistedPost;
+    }
+
 //    @Override
-//    //Whenever someone first creates a post, the post will have 0 comments.
-//    public PostDto createPost(PostDto postDto, String username) {
-//        Member creator = customerRepository.findByUsername(username)
-//                .orElseThrow(() -> new ResourceNotFoundException("User not found with username: " + username));
-//
-//        postDto.setComments(new ArrayList<>());
-//
-//        Post post = PostMapper.mapToPost(postDto);
-//        post.setCreator(creator);
-//
-//        post = postRepository.save(post);
-//
-//        creator.getPosts().add(post);
-//
-//        customerRepository.save(creator);
-//
-//        return PostMapper.mapToPostDto(post);
-//    }
-//
-//    @Override
-//    public PostDto updatePost(Long postId, PostDto postDto) {
-//        Post currPost = postRepository.findById(postId)
+//    public void deletePost(String postId) {
+//        Post toBeDeleted = postRepository.findById(postId)
 //                .orElseThrow(() -> new ResourceNotFoundException("Post not found with id: " + postId));
 //
-//        //Post createdDateTime cannot be changed
-//        //Post id cannot be changed
-//        //Post creator cannot be changed
-//        currPost.setLikeCount(postDto.getLikeCount());
-//        currPost.setKmlFile(KMLFileMapper.mapToKML(postDto.getKmlFile()));
-//        // currPost.setCommentList(postDto.getCommentList());
-//        postRepository.save(currPost);
+//        //Delete all associated comments with the post
+//        //Doesn't work
+//        List<Comment> commentList = toBeDeleted.getCommentList();
+//        for (Comment comment : commentList) {
+//            comment.getCommenter().getComments().removeIf(c -> c.getCommentId().equals(comment.getCommentId()));
+//            // commentService.deleteComment(comment.getCommentId());
+//        }
+//        commentRepository.deleteAll(commentList);
 //
-//        return PostMapper.mapToPostDto(currPost);
-//    }
-//
-////    @Override
-////    public void deletePost(String postId) {
-////        Post toBeDeleted = postRepository.findById(postId)
-////                .orElseThrow(() -> new ResourceNotFoundException("Post not found with id: " + postId));
-////
-////        //Delete all associated comments with the post
-////        //Doesn't work
-////        List<Comment> commentList = toBeDeleted.getCommentList();
-////        for (Comment comment : commentList) {
-////            comment.getCommenter().getComments().removeIf(c -> c.getCommentId().equals(comment.getCommentId()));
-////            // commentService.deleteComment(comment.getCommentId());
-////        }
-////        commentRepository.deleteAll(commentList);
-////
-////        Customer creator = toBeDeleted.getCreator();
-////        if (creator != null && creator.getPosts() != null) {
-////            creator.getPosts().removeIf(p -> p.getPostId().equals(postId));
-////            customerRepository.save(creator);
-////        }
-////
-////        postRepository.deleteById(postId);
-////    }
-//
-//    @Override
-//    public List<PostDto> retrievePostsByUsername(String username) {
-//        Member creator = customerRepository.findByUsername(username)
-//                .orElseThrow(() -> new ResourceNotFoundException("User not found with username: " + username));
-//
-//        List<Post> allPosts = creator.getPosts();
-//
-//        for (Post posts : allPosts) {
-//            posts.setComments(postRepository.findById(posts.getPostId()).orElseThrow(
-//                    () -> new ResourceNotFoundException("Post not found with postId: " + posts.getPostId())
-//            ).getComments());
+//        Customer creator = toBeDeleted.getCreator();
+//        if (creator != null && creator.getPosts() != null) {
+//            creator.getPosts().removeIf(p -> p.getPostId().equals(postId));
+//            customerRepository.save(creator);
 //        }
 //
-//        return allPosts.stream()
-//                .map(PostMapper::mapToPostDto)
-//                .collect(Collectors.toList());
+//        postRepository.deleteById(postId);
 //    }
-//
-//}
+
+    @Override
+    public List<Post> retrievePostsByMemberId(Long memberId) {
+        Member creator = memberRepository.findById(memberId)
+                .orElseThrow(() -> new ResourceNotFoundException("Member not found with id: " + memberId));
+
+        List<Post> allPosts = creator.getPosts();
+
+        for (Post post : allPosts) {
+            post.getComments().size();
+        }
+
+        return allPosts;
+    }
+
+    @Override
+    public List<Post> retrieveAllPosts() {
+        List<Post> allPosts = postRepository.findAll();
+
+        for (Post post : allPosts) {
+            post.getComments().size();
+        }
+
+        return allPosts;
+    }
+
+}

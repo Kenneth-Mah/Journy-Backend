@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import sg.edu.nus.journybackend.entity.Member;
 import sg.edu.nus.journybackend.exception.ResourceNotFoundException;
-import sg.edu.nus.journybackend.exception.InvalidLoginCredentialException;
+import sg.edu.nus.journybackend.exception.InvalidCredentialException;
 import sg.edu.nus.journybackend.repository.MemberRepository;
 import sg.edu.nus.journybackend.service.MemberService;
 
@@ -38,7 +38,7 @@ public class MemberServiceImpl implements MemberService {
             if (member.getPassword().equals(password)) {
                 return member;
             } else {
-                throw new InvalidLoginCredentialException("Invalid username or password!");
+                throw new InvalidCredentialException("Invalid username or password!");
             }
         }
     }

@@ -1,12 +1,12 @@
 package sg.edu.nus.journybackend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -26,8 +26,11 @@ public class Post {
 
     @OneToOne(mappedBy = "post")
     private KMLFile kmlFile;
+
     @ManyToOne
+    @JsonIgnore
     private Member creator;
+
     @OneToMany(mappedBy = "post")
-    private List<Comment> comments = new ArrayList<>();
+    private List<Comment> comments;
 }

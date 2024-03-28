@@ -1,5 +1,6 @@
 package sg.edu.nus.journybackend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -23,7 +24,10 @@ public class Comment {
     private String commentDetails;
 
     @ManyToOne
+    @JsonIgnore
     private Member commenter;
+
     @ManyToOne
+    @JsonIgnore
     private Post post;
 }

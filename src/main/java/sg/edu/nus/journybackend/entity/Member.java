@@ -8,7 +8,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -32,8 +31,9 @@ public class Member {
     @Column(unique = true)
     private String email;
 
-    @OneToMany(mappedBy = "commenter")
-    private List<Comment> comments = new ArrayList<>();
     @OneToMany(mappedBy = "creator")
-    private List<Post> posts = new ArrayList<>();
+    private List<Post> posts;
+
+    @OneToMany(mappedBy = "commenter")
+    private List<Comment> comments;
 }

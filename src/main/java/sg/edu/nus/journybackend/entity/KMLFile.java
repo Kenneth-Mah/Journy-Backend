@@ -1,5 +1,6 @@
 package sg.edu.nus.journybackend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -21,5 +22,6 @@ public class KMLFile {
     private byte[] fileData;
 
     @OneToOne
+    @JsonIgnore
     private Post post;
 }
