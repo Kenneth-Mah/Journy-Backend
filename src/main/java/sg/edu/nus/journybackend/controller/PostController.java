@@ -1,9 +1,11 @@
 package sg.edu.nus.journybackend.controller;
 
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import sg.edu.nus.journybackend.entity.Post;
+import sg.edu.nus.journybackend.exception.ResourceNotFoundException;
 import sg.edu.nus.journybackend.service.PostService;
 
 import java.util.List;
@@ -15,17 +17,17 @@ import java.util.List;
 public class PostController {
     private PostService postService;
 
-//    @DeleteMapping("/{postId}")
-//    public ResponseEntity<?> deletePost(@PathVariable("postId") String postId) {
-//        try {
-//            postService.deletePost(postId);
-//            return ResponseEntity.ok(String.format("PostID: %s deleted successfully", postId));
-//        } catch (ResourceNotFoundException e) {
-//            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-//        } catch (Exception e) {
-//            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-//        }
-//    }
+    @DeleteMapping("/{postId}")
+    public ResponseEntity<?> deletePost(@PathVariable("postId") Long postId) {
+        try {
+            postService.deletePost(postId);
+            return ResponseEntity.ok(String.format("PostID: %s deleted successfully", postId));
+        } catch (ResourceNotFoundException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
 
     @GetMapping
     public ResponseEntity<?> retrieveAllPosts() {

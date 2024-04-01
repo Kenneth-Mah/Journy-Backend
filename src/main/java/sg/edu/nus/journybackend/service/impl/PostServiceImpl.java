@@ -1,23 +1,31 @@
 package sg.edu.nus.journybackend.service.impl;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import sg.edu.nus.journybackend.entity.Comment;
 import sg.edu.nus.journybackend.entity.Member;
 import sg.edu.nus.journybackend.entity.Post;
 import sg.edu.nus.journybackend.exception.InvalidCredentialException;
 import sg.edu.nus.journybackend.exception.ResourceNotFoundException;
 import sg.edu.nus.journybackend.repository.MemberRepository;
 import sg.edu.nus.journybackend.repository.PostRepository;
+import sg.edu.nus.journybackend.repository.CommentRepository;
 import sg.edu.nus.journybackend.service.PostService;
 
+import java.util.ArrayList;
 import java.util.List;
 @Service
 @AllArgsConstructor
 public class PostServiceImpl implements PostService {
 
+    @PersistenceContext
+    private EntityManager em;
+
     private MemberRepository memberRepository;
     private PostRepository postRepository;
-    // private CommentRepository commentRepository;
+    private CommentRepository commentRepository;
 
     @Override
     //Whenever someone first creates a post, the post will have 0 comments.
@@ -51,31 +59,37 @@ public class PostServiceImpl implements PostService {
         // currPost.setCommentList(postDto.getCommentList());
         postRepository.save(persistedPost);
 
+        persistedPost.getComments().size();
+
+        for (Comment comment : persistedPost.getComments()) {
+            detachCommenter(comment);
+        }
+
         return persistedPost;
     }
 
-//    @Override
-//    public void deletePost(String postId) {
-//        Post toBeDeleted = postRepository.findById(postId)
-//                .orElseThrow(() -> new ResourceNotFoundException("Post not found with id: " + postId));
-//
-//        //Delete all associated comments with the post
-//        //Doesn't work
-//        List<Comment> commentList = toBeDeleted.getCommentList();
-//        for (Comment comment : commentList) {
-//            comment.getCommenter().getComments().removeIf(c -> c.getCommentId().equals(comment.getCommentId()));
-//            // commentService.deleteComment(comment.getCommentId());
-//        }
-//        commentRepository.deleteAll(commentList);
-//
-//        Customer creator = toBeDeleted.getCreator();
-//        if (creator != null && creator.getPosts() != null) {
-//            creator.getPosts().removeIf(p -> p.getPostId().equals(postId));
-//            customerRepository.save(creator);
-//        }
-//
-//        postRepository.deleteById(postId);
-//    }
+    @Override
+    public void deletePost(Long postId) {
+        Post toBeDeleted = postRepository.findById(postId)
+                .orElseThrow(() -> new ResourceNotFoundException("Post not found with id: " + postId));
+
+        //Delete all associated comments with the post
+        //Doesn't work
+        List<Comment> commentList = toBeDeleted.getComments();
+        for (Comment comment : commentList) {
+            comment.getCommenter().getComments().removeIf(c -> c.getCommentId().equals(comment.getCommentId()));
+            // commentService.deleteComment(comment.getCommentId());
+        }
+        commentRepository.deleteAll(commentList);
+
+        Member creator = toBeDeleted.getCreator();
+        if (creator != null && creator.getPosts() != null) {
+            creator.getPosts().removeIf(p -> p.getPostId().equals(postId));
+            memberRepository.save(creator);
+        }
+
+        postRepository.deleteById(postId);
+    }
 
     @Override
     public List<Post> retrievePostsByMemberId(Long memberId) {
@@ -86,9 +100,22 @@ public class PostServiceImpl implements PostService {
 
         for (Post post : allPosts) {
             post.getComments().size();
+
+            for (Comment comment : post.getComments()) {
+                detachCommenter(comment);
+            }
         }
 
         return allPosts;
+    }
+
+    private void detachCommenter(Comment comment) {
+        Member commenter = comment.getCommenter();
+        em.detach(commenter);
+
+        commenter.setPassword("");
+        commenter.setComments(new ArrayList<>());
+        commenter.setPosts(new ArrayList<>());
     }
 
     @Override
@@ -97,6 +124,10 @@ public class PostServiceImpl implements PostService {
 
         for (Post post : allPosts) {
             post.getComments().size();
+
+            for (Comment comment : post.getComments()) {
+                detachCommenter(comment);
+            }
         }
 
         return allPosts;

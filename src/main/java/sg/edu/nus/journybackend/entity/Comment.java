@@ -24,7 +24,6 @@ public class Comment {
     private String commentDetails;
 
     @ManyToOne
-    @JsonIgnore
     private Member commenter;
 
     @ManyToOne

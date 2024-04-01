@@ -7,7 +7,7 @@ import java.util.List;
 public interface PostService {
     Post createPost(Long memberId, Post newPost);
     Post updatePost(Long memberId, Long postId, Post post);
-    // void deletePost(String postId);
+    void deletePost(Long postId);
     List<Post> retrievePostsByMemberId(Long memberId);
     List<Post> retrieveAllPosts();
 }
