@@ -7,8 +7,6 @@ import org.springframework.web.bind.annotation.*;
 import sg.edu.nus.journybackend.exception.ResourceNotFoundException;
 import sg.edu.nus.journybackend.service.CommentService;
 
-import java.util.List;
-
 @CrossOrigin("*")
 @AllArgsConstructor
 @RestController
