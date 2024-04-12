@@ -1,7 +1,5 @@
 package sg.edu.nus.journybackend.service.impl;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import sg.edu.nus.journybackend.entity.Comment;
@@ -14,14 +12,10 @@ import sg.edu.nus.journybackend.repository.PostRepository;
 import sg.edu.nus.journybackend.repository.CommentRepository;
 import sg.edu.nus.journybackend.service.PostService;
 
-import java.util.ArrayList;
 import java.util.List;
 @Service
 @AllArgsConstructor
 public class PostServiceImpl implements PostService {
-
-    @PersistenceContext
-    private EntityManager em;
 
     private MemberRepository memberRepository;
     private PostRepository postRepository;
