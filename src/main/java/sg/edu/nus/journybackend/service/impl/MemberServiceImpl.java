@@ -46,20 +46,6 @@ public class MemberServiceImpl implements MemberService {
             Member member = memberRepository.findByUsername(username).get();
 
             if (member.getPassword().equals(password)) {
-                List<Comment> commentList = member.getComments();
-                for (Comment comment : commentList) {
-                    em.detach(comment);
-
-                    comment.setCommenter(null);
-                }
-
-                List<Post> postList = member.getPosts();
-
-                for (Post post : postList) {
-                    em.detach(post);
-                    post.setComments(new ArrayList<>());
-                }
-
                 return member;
             } else {
                 throw new InvalidCredentialException("Invalid username or password!");

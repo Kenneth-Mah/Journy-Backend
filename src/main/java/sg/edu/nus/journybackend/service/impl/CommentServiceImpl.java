@@ -27,11 +27,11 @@ public class CommentServiceImpl implements CommentService {
     private MemberRepository memberRepository;
 
     @Override
-    public Comment createComment(Comment comment, String username, Long postId) {
+    public Comment createComment(Comment comment, Long memberId, Long postId) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new ResourceNotFoundException("Post not found with id: " + postId));
-        Member commenter = memberRepository.findByUsername(username)
-                .orElseThrow(() -> new ResourceNotFoundException("Customer not found with username: " + username));
+        Member commenter = memberRepository.findById(memberId)
+                .orElseThrow(() -> new ResourceNotFoundException("Customer not found with Id: " + memberId));
 
         commenter.getComments().add(comment);
         post.getComments().add(comment);
@@ -43,10 +43,6 @@ public class CommentServiceImpl implements CommentService {
         memberRepository.save(commenter);
         postRepository.save(post);
 
-        em.detach(comment);
-        comment.getCommenter().setComments(new ArrayList<>());
-        comment.getCommenter().setPosts(new ArrayList<>());
-
         return comment;
     }
 
@@ -55,17 +51,7 @@ public class CommentServiceImpl implements CommentService {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new ResourceNotFoundException("Post not found with id: " + postId));
 
-        List<Comment> allComments = post.getComments();
-
-        for (Comment comment : allComments) {
-            em.detach(comment);
-
-            //prevent circular referencing
-            comment.getCommenter().setComments(new ArrayList<>());
-            comment.getCommenter().setPosts(new ArrayList<>());
-        }
-
-        return allComments;
+        return post.getComments();
     }
 
     @Override
@@ -82,6 +68,14 @@ public class CommentServiceImpl implements CommentService {
         }
 
         return allComments;
+    }
+
+    @Override
+    public List<Comment> retrieveCommentsByMemberId(Long memberId) {
+        Member commenter = memberRepository.findById(memberId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with Id: " + memberId));
+
+        return commenter.getComments();
     }
 
     @Override

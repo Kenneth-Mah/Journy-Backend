@@ -61,11 +61,17 @@ public class PostServiceImpl implements PostService {
 
         persistedPost.getComments().size();
 
-        for (Comment comment : persistedPost.getComments()) {
-            detachCommenter(comment);
-        }
-
         return persistedPost;
+    }
+
+    @Override
+    public Post retrievePostById(Long postId) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new ResourceNotFoundException("Post not found with id: " + postId));
+
+        post.getComments().size();
+
+        return post;
     }
 
     @Override
@@ -100,22 +106,9 @@ public class PostServiceImpl implements PostService {
 
         for (Post post : allPosts) {
             post.getComments().size();
-
-            for (Comment comment : post.getComments()) {
-                detachCommenter(comment);
-            }
         }
 
         return allPosts;
-    }
-
-    private void detachCommenter(Comment comment) {
-        Member commenter = comment.getCommenter();
-        em.detach(commenter);
-
-        commenter.setPassword("");
-        commenter.setComments(new ArrayList<>());
-        commenter.setPosts(new ArrayList<>());
     }
 
     @Override
@@ -124,10 +117,6 @@ public class PostServiceImpl implements PostService {
 
         for (Post post : allPosts) {
             post.getComments().size();
-
-            for (Comment comment : post.getComments()) {
-                detachCommenter(comment);
-            }
         }
 
         return allPosts;
