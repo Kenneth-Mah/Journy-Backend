@@ -1,9 +1,11 @@
 package sg.edu.nus.journybackend.service;
 
-import sg.edu.nus.journybackend.entity.Member;
+import sg.edu.nus.journybackend.auth.AuthenticationRequest;
+import sg.edu.nus.journybackend.auth.AuthenticationResponse;
+import sg.edu.nus.journybackend.auth.RegisterRequest;
 
 public interface MemberService {
-    Member registerCustomer(Member newMember);
+    AuthenticationResponse register(RegisterRequest request);
 
-    Member login(String username, String password);
+    AuthenticationResponse authenticate(AuthenticationRequest request);
 }

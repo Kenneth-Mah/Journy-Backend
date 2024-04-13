@@ -3,7 +3,11 @@ package sg.edu.nus.journybackend.controller;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.*;
+import sg.edu.nus.journybackend.auth.AuthenticationRequest;
+import sg.edu.nus.journybackend.auth.AuthenticationResponse;
+import sg.edu.nus.journybackend.auth.RegisterRequest;
 import sg.edu.nus.journybackend.entity.Comment;
 import sg.edu.nus.journybackend.entity.Member;
 import sg.edu.nus.journybackend.entity.Post;
@@ -26,35 +30,29 @@ public class MemberController {
     private PostService postService;
     private CommentService commentService;
 
-    @PostMapping
-    public ResponseEntity<?> registerCustomer(@RequestBody Member newMember) {
+    @PostMapping("/register")
+    public ResponseEntity<?> register(
+            @RequestBody RegisterRequest request
+    ) {
         try{
-            Member savedMember = memberService.registerCustomer(newMember);
+            AuthenticationResponse response = memberService.register(request);
 
-            return new ResponseEntity<>(savedMember, HttpStatus.CREATED);
+            return new ResponseEntity<>(response, HttpStatus.CREATED);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
 
     // This API accepts request as form-data, NOT json object!
-    @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestParam String username, @RequestParam String password) {
+    @PostMapping("/authenticate")
+    public ResponseEntity<?> authenticate(
+            @RequestBody AuthenticationRequest request
+    ) {
         try{
-            Member loginMember = memberService.login(username, password);
-            List<Comment> commentList = loginMember.getComments();
-            for (Comment comment : commentList) {
-                comment.setCommenter(null);
-            }
+            AuthenticationResponse response = memberService.authenticate(request);
 
-            List<Post> postList = loginMember.getPosts();
-
-            for (Post post : postList) {
-                post.setComments(new ArrayList<>());
-            }
-
-            return new ResponseEntity<>(loginMember, HttpStatus.OK);
-        } catch (InvalidCredentialException e) {
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (AuthenticationException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
         } catch (ResourceNotFoundException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);

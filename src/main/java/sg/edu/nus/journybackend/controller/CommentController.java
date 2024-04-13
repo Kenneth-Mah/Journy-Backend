@@ -14,6 +14,12 @@ import sg.edu.nus.journybackend.service.CommentService;
 public class CommentController {
     private CommentService commentService;
 
+    // This API is to test secured endpoint
+    @GetMapping
+    public ResponseEntity<?> sayHello() {
+        return ResponseEntity.ok("Hello from secured endpoint");
+    }
+
     @DeleteMapping("/{commentId}")
     public ResponseEntity<?> deleteComment(@PathVariable("commentId") Long commentId) {
         try {
