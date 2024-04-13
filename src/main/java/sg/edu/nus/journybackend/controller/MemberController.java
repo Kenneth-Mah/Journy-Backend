@@ -43,7 +43,6 @@ public class MemberController {
         }
     }
 
-    // This API accepts request as form-data, NOT json object!
     @PostMapping("/authenticate")
     public ResponseEntity<?> authenticate(
             @RequestBody AuthenticationRequest request
@@ -56,19 +55,6 @@ public class MemberController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
         } catch (ResourceNotFoundException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-        }
-    }
-
-    @PostMapping("/{memberId}/posts")
-    public ResponseEntity<?> createPost(@PathVariable("memberId") Long memberId, @RequestBody Post post) {
-        try {
-            Post createdPost = postService.createPost(memberId, post);
-
-            return new ResponseEntity<>(createdPost, HttpStatus.CREATED);
-        } catch (ResourceNotFoundException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-        } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
 

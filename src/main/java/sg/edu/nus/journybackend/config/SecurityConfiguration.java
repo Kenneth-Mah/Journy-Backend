@@ -26,7 +26,9 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers( // Whitelist this list...
                                 "/api/members/authenticate",
-                                "/api/members/register"
+                                "/api/members/register",
+                                "/api-docs/**",
+                                "/swagger-ui/**"
                         )
                         .permitAll() // ...and authorize all requests within this list
                         .anyRequest() // But any other request...

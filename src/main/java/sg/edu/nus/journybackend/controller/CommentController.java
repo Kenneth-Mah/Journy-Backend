@@ -3,6 +3,8 @@ package sg.edu.nus.journybackend.controller;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import sg.edu.nus.journybackend.exception.ResourceNotFoundException;
 import sg.edu.nus.journybackend.service.CommentService;
@@ -17,6 +19,8 @@ public class CommentController {
     // This API is to test secured endpoint
     @GetMapping
     public ResponseEntity<?> sayHello() {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        System.out.println(userDetails.getUsername());
         return ResponseEntity.ok("Hello from secured endpoint");
     }
 

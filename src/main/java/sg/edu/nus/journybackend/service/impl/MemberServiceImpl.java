@@ -55,12 +55,17 @@ public class MemberServiceImpl implements MemberService {
                         request.getPassword()
                 )
         );
-        Member member = memberRepository.findByUsername(request.getUsername())
-                .orElseThrow(() -> new ResourceNotFoundException("Member with username " + request.getUsername() + " does not exist!"));
+        Member member = findByUsername(request.getUsername());
         String jwtToken = jwtService.generateToken(member);
         return AuthenticationResponse.builder()
                 .token(jwtToken)
                 .build();
+    }
+
+    @Override
+    public Member findByUsername(String username) {
+        return memberRepository.findByUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException("Member with username " + username + " does not exist!"));
     }
 
 }

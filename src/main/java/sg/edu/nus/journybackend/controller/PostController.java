@@ -3,12 +3,15 @@ package sg.edu.nus.journybackend.controller;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import sg.edu.nus.journybackend.entity.Comment;
 import sg.edu.nus.journybackend.entity.Member;
 import sg.edu.nus.journybackend.entity.Post;
 import sg.edu.nus.journybackend.exception.ResourceNotFoundException;
 import sg.edu.nus.journybackend.service.CommentService;
+import sg.edu.nus.journybackend.service.MemberService;
 import sg.edu.nus.journybackend.service.PostService;
 
 import java.util.ArrayList;
@@ -19,8 +22,28 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/posts")
 public class PostController {
+    private MemberService memberService;
     private PostService postService;
     private CommentService commentService;
+
+    @PostMapping
+    public ResponseEntity<?> createPost(
+            @RequestBody Post post
+    ) {
+        try {
+            UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            String username = userDetails.getUsername();
+            Long memberId = memberService.findByUsername(username).getMemberId();
+
+            Post createdPost = postService.createPost(memberId, post);
+
+            return new ResponseEntity<>(createdPost, HttpStatus.CREATED);
+        } catch (ResourceNotFoundException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
 
     @DeleteMapping("/{postId}")
     public ResponseEntity<?> deletePost(@PathVariable("postId") Long postId) {
