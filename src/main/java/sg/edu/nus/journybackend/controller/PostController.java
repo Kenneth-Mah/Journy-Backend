@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import sg.edu.nus.journybackend.entity.Comment;
 import sg.edu.nus.journybackend.entity.Member;
 import sg.edu.nus.journybackend.entity.Post;
+import sg.edu.nus.journybackend.exception.InvalidCredentialException;
 import sg.edu.nus.journybackend.exception.ResourceNotFoundException;
 import sg.edu.nus.journybackend.service.CommentService;
 import sg.edu.nus.journybackend.service.MemberService;
@@ -22,9 +23,10 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/posts")
 public class PostController {
-    private MemberService memberService;
-    private PostService postService;
-    private CommentService commentService;
+
+    private final MemberService memberService;
+    private final PostService postService;
+    private final CommentService commentService;
 
     @PostMapping
     public ResponseEntity<?> createPost(
@@ -44,6 +46,56 @@ public class PostController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
+
+    @PutMapping("/{postId}")
+    public ResponseEntity<?> updatePost(
+            @PathVariable("postId") Long postId,
+            @RequestBody Post post
+    ) {
+        try {
+            UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            String username = userDetails.getUsername();
+            Long memberId = memberService.findByUsername(username).getMemberId();
+
+            Post updatedPost = postService.updatePost(memberId, postId, post);
+
+            for (Comment comment : updatedPost.getComments()) {
+                detachCommenter(comment);
+            }
+
+            return ResponseEntity.ok(updatedPost);
+        } catch (ResourceNotFoundException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (InvalidCredentialException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping
+    public ResponseEntity<?> retrieveMyPosts() {
+        try {
+            UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            String username = userDetails.getUsername();
+            Long memberId = memberService.findByUsername(username).getMemberId();
+
+            List<Post> allPosts = postService.retrievePostsByMemberId(memberId);
+
+            for (Post post : allPosts) {
+                for (Comment comment : post.getComments()) {
+                    detachCommenter(comment);
+                }
+            }
+
+            return ResponseEntity.ok(allPosts);
+        } catch (ResourceNotFoundException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
 
     @DeleteMapping("/{postId}")
     public ResponseEntity<?> deletePost(@PathVariable("postId") Long postId) {
@@ -74,7 +126,7 @@ public class PostController {
         }
     }
 
-    @GetMapping
+    @GetMapping("/all")
     public ResponseEntity<?> retrieveAllPosts() {
         List<Post> posts = postService.retrieveAllPosts();
 
@@ -85,6 +137,29 @@ public class PostController {
         }
 
         return ResponseEntity.ok(posts);
+    }
+
+    @PostMapping("/{postId}/comments")
+    public ResponseEntity<?> createComment(
+            @PathVariable("postId") Long postId,
+            @RequestBody Comment comment
+    ) {
+        try {
+            UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            String username = userDetails.getUsername();
+            Long memberId = memberService.findByUsername(username).getMemberId();
+
+            Comment newComment = commentService.createComment(comment, memberId, postId);
+
+            newComment.getCommenter().setComments(new ArrayList<>());
+            newComment.getCommenter().setPosts(new ArrayList<>());
+
+            return new ResponseEntity<>(newComment, HttpStatus.CREATED);
+        } catch (ResourceNotFoundException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
     }
 
     @GetMapping("/{postId}/comments")

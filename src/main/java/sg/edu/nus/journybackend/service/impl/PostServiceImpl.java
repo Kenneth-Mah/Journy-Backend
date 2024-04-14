@@ -17,9 +17,9 @@ import java.util.List;
 @AllArgsConstructor
 public class PostServiceImpl implements PostService {
 
-    private MemberRepository memberRepository;
-    private PostRepository postRepository;
-    private CommentRepository commentRepository;
+    private final MemberRepository memberRepository;
+    private final PostRepository postRepository;
+    private final CommentRepository commentRepository;
 
     @Override
     //Whenever someone first creates a post, the post will have 0 comments.

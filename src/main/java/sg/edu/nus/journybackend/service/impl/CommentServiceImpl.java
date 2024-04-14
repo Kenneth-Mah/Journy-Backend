@@ -22,9 +22,9 @@ public class CommentServiceImpl implements CommentService {
     @PersistenceContext
     private EntityManager em;
 
-    private CommentRepository commentRepository;
-    private PostRepository postRepository;
-    private MemberRepository memberRepository;
+    private final CommentRepository commentRepository;
+    private final PostRepository postRepository;
+    private final MemberRepository memberRepository;
 
     @Override
     public Comment createComment(Comment comment, Long memberId, Long postId) {
