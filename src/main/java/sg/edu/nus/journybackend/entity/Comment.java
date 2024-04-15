@@ -1,29 +1,29 @@
 package sg.edu.nus.journybackend.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.DBRef;
-import org.springframework.data.mongodb.core.mapping.Document;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
+import lombok.*;
 
 import java.util.Date;
 
-@Getter
-@Setter
+@Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Document("comment")
+@Entity
+@Table(name = "comment")
 public class Comment {
     @Id
-    private String commentId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long commentId;
+    @Temporal(TemporalType.TIMESTAMP)
     private Date commentDateTime;
     private String commentDetails;
 
-    @DBRef
-    private Customer commenter;
+    @ManyToOne
+    private Member commenter;
 
-    @DBRef
+    @ManyToOne
+    @JsonIgnore
     private Post post;
 }

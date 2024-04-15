@@ -3,11 +3,15 @@ package sg.edu.nus.journybackend.controller;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
-import sg.edu.nus.journybackend.dto.CommentDto;
+import sg.edu.nus.journybackend.entity.Comment;
 import sg.edu.nus.journybackend.exception.ResourceNotFoundException;
 import sg.edu.nus.journybackend.service.CommentService;
+import sg.edu.nus.journybackend.service.MemberService;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @CrossOrigin("*")
@@ -15,36 +19,24 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/comments")
 public class CommentController {
-    private CommentService commentService;
 
-    @PostMapping("/create/{postId}")
-    public ResponseEntity<?> createComments(@RequestBody CommentDto commentDto, @PathVariable("postId") String postId) {
-        try {
-            CommentDto newComment = commentService.createComment(commentDto, postId, commentDto.getCommenter().getUsername());
-            return new ResponseEntity<>(newComment, HttpStatus.CREATED);
-        } catch (ResourceNotFoundException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-        } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
-    }
+    private final MemberService memberService;
+    private final CommentService commentService;
 
-    @GetMapping("/post/{postId}")
-    public ResponseEntity<?> retrieveCommentsByPostId(@PathVariable("postId") String postId) {
+    @GetMapping
+    public ResponseEntity<?> getComments() {
         try {
-            List<CommentDto> comments = commentService.retrieveCommentsByPostId(postId);
-            return ResponseEntity.ok(comments);
-        } catch (ResourceNotFoundException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-        } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
-    }
+            UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            String username = userDetails.getUsername();
+            Long memberId = memberService.findByUsername(username).getMemberId();
 
-    @GetMapping("/user/{username}")
-    public ResponseEntity<?> retrieveCommentsByUsername(@PathVariable("username") String username) {
-        try {
-            List<CommentDto> comments = commentService.retrieveCommentsByUsername(username);
+            List<Comment> comments = commentService.retrieveCommentsByMemberId(memberId);
+
+            for (Comment comment : comments) {
+                comment.getCommenter().setComments(new ArrayList<>());
+                comment.getCommenter().setPosts(new ArrayList<>());
+            }
+
             return ResponseEntity.ok(comments);
         } catch (ResourceNotFoundException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
@@ -54,7 +46,7 @@ public class CommentController {
     }
 
     @DeleteMapping("/{commentId}")
-    public ResponseEntity<?> deleteComment(@PathVariable("commentId") String commentId) {
+    public ResponseEntity<?> deleteComment(@PathVariable("commentId") Long commentId) {
         try {
             commentService.deleteComment(commentId);
             return ResponseEntity.ok(String.format("CommentID: %s deleted successfully", commentId));

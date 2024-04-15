@@ -1,21 +1,24 @@
 package sg.edu.nus.journybackend.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
+import lombok.*;
 
-@Getter
-@Setter
+@Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Document("kml_files")
+@Entity
+@Table(name = "kml_file")
 public class KMLFile {
     @Id
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long kmlFileId;
 
     private String fileName;
     private byte[] fileData;
+
+    @OneToOne
+    @JsonIgnore
+    private Post post;
 }

@@ -1,15 +1,16 @@
-package sg.edu.nus.journybackend.dto;
+package sg.edu.nus.journybackend.auth;
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Builder;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
+@Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
-@Setter
-public class LoginDto {
+public class AuthenticationRequest {
+
     private String username;
     private String password;
 }
