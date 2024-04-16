@@ -3,6 +3,7 @@ package sg.edu.nus.journybackend.controller;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -36,9 +37,12 @@ public class KMLFileController {
         try {
             KMLFile kmlFile = kmlFileService.downloadKMLFileUsingFileId(fileId);
 
-            return new ResponseEntity<>(kmlFile, HttpStatus.CREATED);
+            return ResponseEntity.ok()
+                    .contentType(MediaType.APPLICATION_XML)
+                    .header("Content-Disposition", "attachment; filename=\"" + kmlFile.getFileName() + "\"")
+                    .body(kmlFile.getFileData());
         } catch (IOException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
 

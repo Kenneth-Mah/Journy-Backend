@@ -4,6 +4,9 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
+/src/kml/*
+!/src/main/kml/.gitkeep
+
 ### STS ###
 .apt_generated
 .classpath

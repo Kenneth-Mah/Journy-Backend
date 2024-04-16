@@ -55,7 +55,7 @@ public class KMLFileServiceImpl implements KMLFileService {
         );
 
         String path = kmlFile.getFilePath();
-        System.out.println("path: " + path);
+//        System.out.println("path: " + path);
 
         byte[] fileContent = java.nio.file.Files.readAllBytes(new File(path).toPath());
 
