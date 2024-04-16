@@ -8,6 +8,8 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
+@Setter
 @Entity
 @Table(name = "kml_file")
 public class KMLFile {
@@ -16,6 +18,11 @@ public class KMLFile {
     private Long kmlFileId;
 
     private String fileName;
+    private String fileType;
+    private String filePath;
+
+    @Lob
+    @Transient
     private byte[] fileData;
 
     @OneToOne

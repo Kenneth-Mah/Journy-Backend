@@ -26,6 +26,7 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers( // Whitelist this list...
                                 "/api/members/**",
+                                "/api/kml_files/**",
                                 "/api-docs/**",
                                 "/swagger-ui/**"
                         )
