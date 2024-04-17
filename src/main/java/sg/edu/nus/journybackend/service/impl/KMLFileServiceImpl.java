@@ -1,7 +1,6 @@
 package sg.edu.nus.journybackend.service.impl;
 
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import sg.edu.nus.journybackend.entity.KMLFile;
 import sg.edu.nus.journybackend.entity.Post;
@@ -20,11 +19,8 @@ import java.nio.file.Paths;
 @AllArgsConstructor
 public class KMLFileServiceImpl implements KMLFileService {
 
-    @Autowired
-    private KMLFileRepository kmlFileRepository;
-
-    @Autowired
-    private PostRepository postRepository;
+    private final PostRepository postRepository;
+    private final KMLFileRepository kmlFileRepository;
 
     private static final String BASE_PATH = System.getProperty("user.dir");
     private static final String RELATIVE_PATH = "src/main/kml/";
@@ -66,43 +62,11 @@ public class KMLFileServiceImpl implements KMLFileService {
         );
 
         String path = kmlFile.getFilePath();
-//        System.out.println("path: " + path);
 
         byte[] fileContent = java.nio.file.Files.readAllBytes(new File(path).toPath());
 
         kmlFile.setFileData(fileContent);
         return kmlFile;
     }
-
-    //DB implementation
-//    @Override
-//    public KMLFile storeFile(MultipartFile file) throws IOException {
-//        KMLFile kmlFile = KMLFile.builder()
-//                .fileName(file.getOriginalFilename())
-//                .fileType(file.getContentType())
-//                .fileData(file.getBytes())
-//                .build();
-//
-//        kmlFile = kmlFileRepository.save(kmlFile);
-//
-//        if (kmlFile.getKmlFileId() != null) {
-//            return kmlFile;
-//        }
-//
-//        return null;
-//    }
-
-//    @Override
-//    public KMLFile downloadKMLFileUsingFileName(String fileName) throws IOException {
-//        String path = kmlFileRepository.findByFileName(fileName).getFilePath();
-//        System.out.println("path" + path);
-//
-//        byte[] fileContent = java.nio.file.Files.readAllBytes(new File(path).toPath());
-//
-//        KMLFile kmlFile = kmlFileRepository.findByFileName(fileName);
-//        kmlFile.setFileData(fileContent);
-//
-//        return kmlFile;
-//    }
 
 }

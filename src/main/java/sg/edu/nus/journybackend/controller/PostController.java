@@ -2,8 +2,6 @@ package sg.edu.nus.journybackend.controller;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.jackson.JsonObjectDeserializer;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -35,7 +33,6 @@ public class PostController {
     private final MemberService memberService;
     private final PostService postService;
     private final CommentService commentService;
-    @Autowired
     private final KMLFileService kmlFileService;
 
     @PostMapping
