@@ -1,5 +1,6 @@
 package sg.edu.nus.journybackend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
@@ -33,17 +34,29 @@ public class Member implements UserDetails {
     @Column(unique = true)
     private String email;
 
+    private String profilePictureURL;
+    private String aboutMe;
+
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    private String profilePic;
-    private int followers;
-    private int following;
-    private int totalLikes;
-    private String aboutMe;
+    @Transient
+    private Integer likesReceived;
 
-    // Likely @ManyToMany
-    // private List<Long> likedPosts;
+    @OneToMany
+    private List<Post> likedPosts;
+
+    @Transient
+    private Integer followingCount;
+    @Transient
+    private Integer followersCount;
+
+    @OneToMany
+    @JsonIgnore
+    private List<Member> followingMembers;
+    @OneToMany
+    @JsonIgnore
+    private List<Member> followersMembers;
 
     @OneToMany(mappedBy = "creator")
     private List<Post> posts;

@@ -6,7 +6,6 @@ import lombok.*;
 
 import java.util.Date;
 import java.util.List;
-import java.util.ArrayList;
 
 @Data
 @Builder
@@ -20,20 +19,21 @@ public class Post {
     private Long postId;
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdDateTime;
-    private Integer likeCount;
+    private String postPictureURL;
+    private String title;
+    private String description;
+    private Integer budget;
 
     @OneToOne(mappedBy = "post")
     private KMLFile kmlFile;
 
-    private String postPicture;
-    private String postTitle;
-    private String postDescription;
-    private double budget;
+    // @Transient
+    // private Integer likeCount;
 
     @ElementCollection
     @CollectionTable(name = "post_locations", joinColumns = @JoinColumn(name = "post_id"))
     @Column(name = "location")
-    private List<String> locations = new ArrayList<>();
+    private List<String> locations;
 
     @ManyToOne
     @JsonIgnore

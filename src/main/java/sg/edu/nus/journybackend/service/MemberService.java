@@ -11,4 +11,6 @@ public interface MemberService {
     AuthenticationResponse authenticate(AuthenticationRequest request);
 
     Member findByUsername(String username);
+
+    void followByMemberId(Long memberId, Long targetMemberId);
 }

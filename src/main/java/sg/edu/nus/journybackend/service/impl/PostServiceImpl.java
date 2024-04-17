@@ -48,11 +48,11 @@ public class PostServiceImpl implements PostService {
         //Post createdDateTime cannot be changed
         //Post id cannot be changed
         //Post creator cannot be changed
-        persistedPost.setLikeCount(editedPost.getLikeCount());
+        // persistedPost.setLikeCount(editedPost.getLikeCount());
         persistedPost.setKmlFile(editedPost.getKmlFile());
-        persistedPost.setPostPicture(editedPost.getPostPicture());
-        persistedPost.setPostTitle(editedPost.getPostTitle());
-        persistedPost.setPostDescription(editedPost.getPostDescription());
+        persistedPost.setPostPictureURL(editedPost.getPostPictureURL());
+        persistedPost.setTitle(editedPost.getTitle());
+        persistedPost.setDescription(editedPost.getDescription());
         persistedPost.setBudget(editedPost.getBudget());
         // persistedPost.setLocations(editedPost.getLocations());
         // currPost.setCommentList(postDto.getCommentList());
