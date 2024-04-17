@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import sg.edu.nus.journybackend.auth.AuthenticationRequest;
 import sg.edu.nus.journybackend.auth.AuthenticationResponse;
 import sg.edu.nus.journybackend.auth.RegisterRequest;
+import sg.edu.nus.journybackend.entity.Member;
 import sg.edu.nus.journybackend.exception.ResourceNotFoundException;
 import sg.edu.nus.journybackend.service.MemberService;
 
@@ -64,5 +65,56 @@ public class MemberController {
         } catch (ResourceNotFoundException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
+    }
+
+    @GetMapping("/my-profile")
+    public ResponseEntity<?> getMyProfile() {
+        try{
+            UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            String username = userDetails.getUsername();
+            Member member = memberService.findByUsername(username);
+
+            processMemberForResponse(member);
+
+            return new ResponseEntity<>(member, HttpStatus.OK);
+        } catch (ResourceNotFoundException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @PutMapping("/update-profile")
+    public ResponseEntity<?> updateProfile(
+            @RequestBody Member updatedMember
+    ) {
+        try{
+            UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            String username = userDetails.getUsername();
+            Long memberId = memberService.findByUsername(username).getMemberId();
+
+            Member persistedMember = memberService.updateMember(memberId, updatedMember);
+
+            processMemberForResponse(persistedMember);
+
+            return new ResponseEntity<>(persistedMember, HttpStatus.OK);
+        } catch (ResourceNotFoundException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        }
+    }
+
+    private void processMemberForResponse(Member member) {
+        for (Member follower : member.getFollowersMembers()) {
+            removeRecursion(follower);
+        }
+        for (Member following : member.getFollowingMembers()) {
+            removeRecursion(following);
+        }
+    }
+
+    private void removeRecursion(Member member) {
+        member.setFollowersMembers(null);
+        member.setFollowingMembers(null);
+        member.setPosts(null);
+        member.setLikedPosts(null);
+        member.setComments(null);
     }
 }

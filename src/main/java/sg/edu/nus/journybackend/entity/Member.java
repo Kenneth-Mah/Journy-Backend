@@ -40,10 +40,6 @@ public class Member implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    @Transient
-    private Integer followingCount;
-    @Transient
-    private Integer followersCount;
     @OneToMany
     @JsonIgnore
     private List<Member> followingMembers;

@@ -27,13 +27,13 @@ public class Post {
     @OneToOne(mappedBy = "post")
     private KMLFile kmlFile;
 
-    // @Transient
-    // private Integer likeCount;
-
     @ElementCollection
     @CollectionTable(name = "post_locations", joinColumns = @JoinColumn(name = "post_id"))
     @Column(name = "location")
     private List<String> locations;
+
+    @Transient
+    private Integer likeCount;
 
     @ManyToOne
     @JsonIgnore

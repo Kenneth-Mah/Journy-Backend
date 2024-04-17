@@ -12,6 +12,7 @@ import sg.edu.nus.journybackend.repository.PostRepository;
 import sg.edu.nus.journybackend.repository.CommentRepository;
 import sg.edu.nus.journybackend.service.PostService;
 
+import java.util.Date;
 import java.util.List;
 @Service
 @AllArgsConstructor
@@ -27,6 +28,7 @@ public class PostServiceImpl implements PostService {
         Member creator = memberRepository.findById(memberId)
                 .orElseThrow(() -> new ResourceNotFoundException("Member not found with id: " + memberId));
         newPost.setCreator(creator);
+        newPost.setCreatedDateTime(new Date());
         postRepository.save(newPost);
 
         creator.getPosts().add(newPost);

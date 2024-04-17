@@ -82,4 +82,17 @@ public class MemberServiceImpl implements MemberService {
         memberRepository.save(targetMember);
     }
 
+    @Override
+    public Member updateMember(Long memberId, Member updatedMember) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new ResourceNotFoundException("Member with id " + memberId + " does not exist!"));
+
+        member.setName(updatedMember.getName());
+        member.setProfilePictureURL(updatedMember.getProfilePictureURL());
+        member.setAboutMe(updatedMember.getAboutMe());
+
+        memberRepository.save(member);
+        return member;
+    }
+
 }
