@@ -165,4 +165,16 @@ public class PostServiceImpl implements PostService {
         return allPosts;
     }
 
+    @Override
+    public void likePost(Long memberId, Long postId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new ResourceNotFoundException("Member not found with id: " + memberId));
+
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new ResourceNotFoundException("Post not found with id: " + postId));
+
+        member.getLikedPosts().add(post);
+        memberRepository.save(member);
+    }
+
 }

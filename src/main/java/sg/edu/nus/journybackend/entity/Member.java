@@ -41,16 +41,9 @@ public class Member implements UserDetails {
     private Role role;
 
     @Transient
-    private Integer likesReceived;
-
-    @OneToMany
-    private List<Post> likedPosts;
-
-    @Transient
     private Integer followingCount;
     @Transient
     private Integer followersCount;
-
     @OneToMany
     @JsonIgnore
     private List<Member> followingMembers;
@@ -60,6 +53,11 @@ public class Member implements UserDetails {
 
     @OneToMany(mappedBy = "creator")
     private List<Post> posts;
+
+    @Transient
+    private Integer likesReceived;
+    @OneToMany
+    private List<Post> likedPosts;
 
     @OneToMany(mappedBy = "commenter")
     private List<Comment> comments;
