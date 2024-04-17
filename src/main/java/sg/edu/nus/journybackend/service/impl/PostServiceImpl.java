@@ -12,6 +12,7 @@ import sg.edu.nus.journybackend.repository.PostRepository;
 import sg.edu.nus.journybackend.repository.CommentRepository;
 import sg.edu.nus.journybackend.service.PostService;
 
+import java.util.Date;
 import java.util.List;
 @Service
 @AllArgsConstructor
@@ -27,6 +28,7 @@ public class PostServiceImpl implements PostService {
         Member creator = memberRepository.findById(memberId)
                 .orElseThrow(() -> new ResourceNotFoundException("Member not found with id: " + memberId));
         newPost.setCreator(creator);
+        newPost.setCreatedDateTime(new Date());
         postRepository.save(newPost);
 
         creator.getPosts().add(newPost);
@@ -48,11 +50,11 @@ public class PostServiceImpl implements PostService {
         //Post createdDateTime cannot be changed
         //Post id cannot be changed
         //Post creator cannot be changed
-        persistedPost.setLikeCount(editedPost.getLikeCount());
+        // persistedPost.setLikeCount(editedPost.getLikeCount());
         persistedPost.setKmlFile(editedPost.getKmlFile());
-        persistedPost.setPostPicture(editedPost.getPostPicture());
-        persistedPost.setPostTitle(editedPost.getPostTitle());
-        persistedPost.setPostDescription(editedPost.getPostDescription());
+        persistedPost.setPostPictureURL(editedPost.getPostPictureURL());
+        persistedPost.setTitle(editedPost.getTitle());
+        persistedPost.setDescription(editedPost.getDescription());
         persistedPost.setBudget(editedPost.getBudget());
         // persistedPost.setLocations(editedPost.getLocations());
         // currPost.setCommentList(postDto.getCommentList());
@@ -163,6 +165,18 @@ public class PostServiceImpl implements PostService {
         }
 
         return allPosts;
+    }
+
+    @Override
+    public void likePost(Long memberId, Long postId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new ResourceNotFoundException("Member not found with id: " + memberId));
+
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new ResourceNotFoundException("Post not found with id: " + postId));
+
+        member.getLikedPosts().add(post);
+        memberRepository.save(member);
     }
 
 }

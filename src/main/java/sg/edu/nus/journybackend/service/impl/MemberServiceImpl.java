@@ -68,4 +68,31 @@ public class MemberServiceImpl implements MemberService {
                 .orElseThrow(() -> new ResourceNotFoundException("Member with username " + username + " does not exist!"));
     }
 
+    @Override
+    public void followByMemberId(Long memberId, Long targetMemberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new ResourceNotFoundException("Member with id " + memberId + " does not exist!"));
+        Member targetMember = memberRepository.findById(targetMemberId)
+                .orElseThrow(() -> new ResourceNotFoundException("Member with id " + targetMemberId + " does not exist!"));
+
+        member.getFollowingMembers().add(targetMember);
+        targetMember.getFollowersMembers().add(member);
+
+        memberRepository.save(member);
+        memberRepository.save(targetMember);
+    }
+
+    @Override
+    public Member updateMember(Long memberId, Member updatedMember) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new ResourceNotFoundException("Member with id " + memberId + " does not exist!"));
+
+        member.setName(updatedMember.getName());
+        member.setProfilePictureURL(updatedMember.getProfilePictureURL());
+        member.setAboutMe(updatedMember.getAboutMe());
+
+        memberRepository.save(member);
+        return member;
+    }
+
 }

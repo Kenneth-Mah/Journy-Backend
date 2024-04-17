@@ -6,9 +6,7 @@ import sg.edu.nus.journybackend.entity.KMLFile;
 import java.io.IOException;
 
 public interface KMLFileService {
-    // public KMLFile storeFile(MultipartFile file) throws IOException;
+    KMLFile storeIntoFileSystem(Long postId, MultipartFile file) throws IOException;
 
-    public KMLFile storeIntoFileSystem(Long postId, MultipartFile file) throws IOException;
-    public KMLFile downloadKMLFileUsingFileId(Long fileId) throws IOException;
-    // public KMLFile downloadKMLFileUsingFileName(String fileName) throws IOException;
+    KMLFile downloadKMLFileUsingFileId(Long fileId) throws IOException;
 }
