@@ -4,8 +4,10 @@ import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import sg.edu.nus.journybackend.entity.KMLFile;
+import sg.edu.nus.journybackend.entity.Post;
 import sg.edu.nus.journybackend.exception.ResourceNotFoundException;
 import sg.edu.nus.journybackend.repository.KMLFileRepository;
+import sg.edu.nus.journybackend.repository.PostRepository;
 import sg.edu.nus.journybackend.service.KMLFileService;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -21,12 +23,18 @@ public class KMLFileServiceImpl implements KMLFileService {
     @Autowired
     private KMLFileRepository kmlFileRepository;
 
+    @Autowired
+    private PostRepository postRepository;
+
     private static final String BASE_PATH = System.getProperty("user.dir");
     private static final String RELATIVE_PATH = "src/main/kml/";
     private static final String FILE_PATH = Paths.get(BASE_PATH, RELATIVE_PATH).toString();
 
     @Override
-    public KMLFile storeIntoFileSystem(MultipartFile file) throws IOException {
+    public KMLFile storeIntoFileSystem(Long postId, MultipartFile file) throws IOException {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new ResourceNotFoundException("Post not found with id: " + postId));
+
         String filePath = FILE_PATH + "\\" + file.getOriginalFilename();
         System.out.println(filePath);
 
@@ -36,6 +44,9 @@ public class KMLFileServiceImpl implements KMLFileService {
                 .filePath(filePath)
                 .fileData(file.getBytes())
                 .build();
+
+        post.setKmlFile(kmlFile);
+        kmlFile.setPost(post);
 
         kmlFile = kmlFileRepository.save(kmlFile);
 

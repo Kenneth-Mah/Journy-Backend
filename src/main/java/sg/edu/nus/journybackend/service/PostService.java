@@ -8,6 +8,8 @@ public interface PostService {
     Post createPost(Long memberId, Post newPost);
     Post updatePost(Long memberId, Long postId, Post post);
 
+    Post addLocation(Long memberId, Long postId, String location);
+    Post addLocations(Long memberId, Long postId, List<String> location);
     Post retrievePostById(Long postId);
     void deletePost(Long postId);
     List<Post> retrievePostsByMemberId(Long memberId);
