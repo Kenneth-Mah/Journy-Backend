@@ -36,6 +36,15 @@ public class Member implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    private String profilePic;
+    private int followers;
+    private int following;
+    private int totalLikes;
+    private String aboutMe;
+
+    // Likely @ManyToMany
+    // private List<Long> likedPosts;
+
     @OneToMany(mappedBy = "creator")
     private List<Post> posts;
 

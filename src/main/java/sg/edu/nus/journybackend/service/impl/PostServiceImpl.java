@@ -50,7 +50,57 @@ public class PostServiceImpl implements PostService {
         //Post creator cannot be changed
         persistedPost.setLikeCount(editedPost.getLikeCount());
         persistedPost.setKmlFile(editedPost.getKmlFile());
+        persistedPost.setPostPicture(editedPost.getPostPicture());
+        persistedPost.setPostTitle(editedPost.getPostTitle());
+        persistedPost.setPostDescription(editedPost.getPostDescription());
+        persistedPost.setBudget(editedPost.getBudget());
+        // persistedPost.setLocations(editedPost.getLocations());
         // currPost.setCommentList(postDto.getCommentList());
+        postRepository.save(persistedPost);
+
+        persistedPost.getComments().size();
+
+        return persistedPost;
+    }
+
+    @Override
+    public Post addLocation(Long memberId, Long postId, String location) {
+        Post persistedPost = postRepository.findById(postId)
+                .orElseThrow(() -> new ResourceNotFoundException("Post not found with id: " + postId));
+
+        //Check if the member is the creator of the post
+        if (!persistedPost.getCreator().getMemberId().equals(memberId)) {
+            throw new InvalidCredentialException("Member not authorized to update post with id: " + postId);
+        }
+
+        List<String> currLocations = persistedPost.getLocations();
+        currLocations.add(location);
+
+        persistedPost.setLocations(currLocations);
+        postRepository.save(persistedPost);
+
+        persistedPost.getComments().size();
+
+        return persistedPost;
+    }
+
+    @Override
+    public Post addLocations(Long memberId, Long postId, List<String> locations) {
+        Post persistedPost = postRepository.findById(postId)
+                .orElseThrow(() -> new ResourceNotFoundException("Post not found with id: " + postId));
+
+        //Check if the member is the creator of the post
+        if (!persistedPost.getCreator().getMemberId().equals(memberId)) {
+            throw new InvalidCredentialException("Member not authorized to update post with id: " + postId);
+        }
+
+        List<String> currLocations = persistedPost.getLocations();
+
+        for (String location : locations) {
+            currLocations.add(location);
+        }
+
+        persistedPost.setLocations(currLocations);
         postRepository.save(persistedPost);
 
         persistedPost.getComments().size();
@@ -74,7 +124,6 @@ public class PostServiceImpl implements PostService {
                 .orElseThrow(() -> new ResourceNotFoundException("Post not found with id: " + postId));
 
         //Delete all associated comments with the post
-        //Doesn't work
         List<Comment> commentList = toBeDeleted.getComments();
         for (Comment comment : commentList) {
             comment.getCommenter().getComments().removeIf(c -> c.getCommentId().equals(comment.getCommentId()));

@@ -25,7 +25,8 @@ public class SecurityConfiguration {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers( // Whitelist this list...
-                                "/api/members/**",
+                                "/api/members/register",
+                                "/api/members/authenticate",
                                 "/api-docs/**",
                                 "/swagger-ui/**"
                         )

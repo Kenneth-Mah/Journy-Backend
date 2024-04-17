@@ -6,6 +6,7 @@ import lombok.*;
 
 import java.util.Date;
 import java.util.List;
+import java.util.ArrayList;
 
 @Data
 @Builder
@@ -23,6 +24,16 @@ public class Post {
 
     @OneToOne(mappedBy = "post")
     private KMLFile kmlFile;
+
+    private String postPicture;
+    private String postTitle;
+    private String postDescription;
+    private double budget;
+
+    @ElementCollection
+    @CollectionTable(name = "post_locations", joinColumns = @JoinColumn(name = "post_id"))
+    @Column(name = "location")
+    private List<String> locations = new ArrayList<>();
 
     @ManyToOne
     @JsonIgnore

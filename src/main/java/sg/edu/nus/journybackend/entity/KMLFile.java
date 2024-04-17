@@ -16,6 +16,11 @@ public class KMLFile {
     private Long kmlFileId;
 
     private String fileName;
+    private String fileType;
+    private String filePath;
+
+    @Lob
+    @Transient
     private byte[] fileData;
 
     @OneToOne
