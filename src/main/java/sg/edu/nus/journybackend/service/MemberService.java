@@ -15,4 +15,6 @@ public interface MemberService {
     void followByMemberId(Long memberId, Long targetMemberId);
 
     Member updateMember(Long memberId, Member updatedMember);
+
+    Integer getLikesReceived(Long memberId);
 }

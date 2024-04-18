@@ -45,6 +45,7 @@ public class PostController {
             Long memberId = memberService.findByUsername(username).getMemberId();
 
             Post createdPost = postService.createPost(memberId, post);
+            processPostForResponse(createdPost);
 
             return new ResponseEntity<>(createdPost, HttpStatus.CREATED);
         } catch (ResourceNotFoundException e) {
@@ -66,9 +67,7 @@ public class PostController {
 
             Post updatedPost = postService.updatePost(memberId, postId, post);
 
-            for (Comment comment : updatedPost.getComments()) {
-                detachCommenter(comment);
-            }
+            processPostForResponse(updatedPost);
 
             return ResponseEntity.ok(updatedPost);
         } catch (ResourceNotFoundException e) {
@@ -90,9 +89,7 @@ public class PostController {
             List<Post> allPosts = postService.retrievePostsByMemberId(memberId);
 
             for (Post post : allPosts) {
-                for (Comment comment : post.getComments()) {
-                    detachCommenter(comment);
-                }
+                processPostForResponse(post);
             }
 
             return ResponseEntity.ok(allPosts);
@@ -121,9 +118,7 @@ public class PostController {
         try {
             Post post = postService.retrievePostById(postId);
 
-            for (Comment comment : post.getComments()) {
-                detachCommenter(comment);
-            }
+            processPostForResponse(post);
 
             return ResponseEntity.ok(post);
         } catch (ResourceNotFoundException e) {
@@ -155,9 +150,7 @@ public class PostController {
         List<Post> posts = postService.retrieveAllPosts();
 
         for (Post post : posts) {
-            for (Comment comment : post.getComments()) {
-                detachCommenter(comment);
-            }
+            processPostForResponse(post);
         }
 
         return ResponseEntity.ok(posts);
@@ -246,13 +239,26 @@ public class PostController {
 
             Post post = postService.retrievePostById(postId);
 
-            postService.addLocation(memberId, post.getPostId(), location);
+            post = postService.addLocation(memberId, post.getPostId(), location);
+
+            processPostForResponse(post);
 
             return ResponseEntity.ok(post);
         } catch (ResourceNotFoundException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    private void processPostForResponse(Post post) {
+        Integer likeCount = postService.getLikeCount(post.getPostId());
+        post.setLikeCount(likeCount);
+
+        if (post.getComments() != null) {
+            for (Comment comment : post.getComments()) {
+                detachCommenter(comment);
+            }
         }
     }
 

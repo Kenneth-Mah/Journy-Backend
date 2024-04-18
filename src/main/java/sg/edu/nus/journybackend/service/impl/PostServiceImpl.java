@@ -98,9 +98,7 @@ public class PostServiceImpl implements PostService {
 
         List<String> currLocations = persistedPost.getLocations();
 
-        for (String location : locations) {
-            currLocations.add(location);
-        }
+        currLocations.addAll(locations);
 
         persistedPost.setLocations(currLocations);
         postRepository.save(persistedPost);
@@ -177,6 +175,11 @@ public class PostServiceImpl implements PostService {
 
         member.getLikedPosts().add(post);
         memberRepository.save(member);
+    }
+
+    @Override
+    public Integer getLikeCount(Long postId) {
+        return memberRepository.countByLikedPostsPostId(postId);
     }
 
 }

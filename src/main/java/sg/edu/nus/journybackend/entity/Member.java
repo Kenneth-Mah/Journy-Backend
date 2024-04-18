@@ -1,6 +1,5 @@
 package sg.edu.nus.journybackend.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
@@ -41,10 +40,8 @@ public class Member implements UserDetails {
     private Role role;
 
     @OneToMany
-    @JsonIgnore
     private List<Member> followingMembers;
     @OneToMany
-    @JsonIgnore
     private List<Member> followersMembers;
 
     @OneToMany(mappedBy = "creator")
@@ -52,7 +49,7 @@ public class Member implements UserDetails {
 
     @Transient
     private Integer likesReceived;
-    @OneToMany
+    @ManyToMany
     private List<Post> likedPosts;
 
     @OneToMany(mappedBy = "commenter")

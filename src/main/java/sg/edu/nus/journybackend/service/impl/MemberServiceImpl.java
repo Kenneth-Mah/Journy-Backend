@@ -95,4 +95,11 @@ public class MemberServiceImpl implements MemberService {
         return member;
     }
 
+    @Override
+    public Integer getLikesReceived(Long memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new ResourceNotFoundException("Member with id " + memberId + " does not exist!"));
+        return memberRepository.countByLikedPostsCreator(member);
+    }
+
 }

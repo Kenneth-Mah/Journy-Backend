@@ -22,4 +22,6 @@ public interface PostService {
     List<Post> retrieveAllPosts();
 
     void likePost(Long memberId, Long postId);
+
+    Integer getLikeCount(Long postId);
 }
