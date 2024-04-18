@@ -41,7 +41,7 @@ public class PostController {
         try {
             UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             String username = userDetails.getUsername();
-            Long memberId = memberService.findByUsername(username).getMemberId();
+            Long memberId = memberService.retrieveMemberByUsername(username).getMemberId();
 
             Post createdPost = postService.createPost(memberId, post);
             processPostForResponse(createdPost);
@@ -62,7 +62,7 @@ public class PostController {
         try {
             UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             String username = userDetails.getUsername();
-            Long memberId = memberService.findByUsername(username).getMemberId();
+            Long memberId = memberService.retrieveMemberByUsername(username).getMemberId();
 
             Post updatedPost = postService.updatePost(memberId, postId, post);
 
@@ -83,7 +83,7 @@ public class PostController {
         try {
             UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             String username = userDetails.getUsername();
-            Long memberId = memberService.findByUsername(username).getMemberId();
+            Long memberId = memberService.retrieveMemberByUsername(username).getMemberId();
 
             List<Post> allPosts = postService.retrievePostsByMemberId(memberId);
 
@@ -132,7 +132,7 @@ public class PostController {
         try {
             UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             String username = userDetails.getUsername();
-            Long memberId = memberService.findByUsername(username).getMemberId();
+            Long memberId = memberService.retrieveMemberByUsername(username).getMemberId();
 
             postService.likePost(memberId, postId);
 
@@ -163,7 +163,7 @@ public class PostController {
         try {
             UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             String username = userDetails.getUsername();
-            Long memberId = memberService.findByUsername(username).getMemberId();
+            Long memberId = memberService.retrieveMemberByUsername(username).getMemberId();
 
             Comment newComment = commentService.createComment(comment, memberId, postId);
 
@@ -229,7 +229,7 @@ public class PostController {
         try {
             UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             String username = userDetails.getUsername();
-            Long memberId = memberService.findByUsername(username).getMemberId();
+            Long memberId = memberService.retrieveMemberByUsername(username).getMemberId();
 
             String location = jsonLocation.get("location").asText();
 
@@ -259,12 +259,6 @@ public class PostController {
         }
     }
 
-    private void detachCommenter(Comment comment) {
-        Member commenter = comment.getCommenter();
-
-        detachMember(commenter);
-    }
-
     private void detachMember(Member member) {
         member.setPassword(null);
         member.setFollowersMembers(null);
@@ -272,5 +266,11 @@ public class PostController {
         member.setPosts(null);
         member.setLikedPosts(null);
         member.setComments(null);
+    }
+
+    private void detachCommenter(Comment comment) {
+        Member commenter = comment.getCommenter();
+
+        detachMember(commenter);
     }
 }

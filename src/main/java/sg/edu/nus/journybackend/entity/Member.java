@@ -39,9 +39,9 @@ public class Member implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    @OneToMany
+    @ManyToMany
     private List<Member> followingMembers;
-    @OneToMany
+    @ManyToMany
     private List<Member> followersMembers;
 
     @OneToMany(mappedBy = "creator")
