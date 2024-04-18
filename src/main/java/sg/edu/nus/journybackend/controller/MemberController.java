@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import sg.edu.nus.journybackend.auth.AuthenticationRequest;
 import sg.edu.nus.journybackend.auth.AuthenticationResponse;
 import sg.edu.nus.journybackend.auth.RegisterRequest;
+import sg.edu.nus.journybackend.entity.Comment;
 import sg.edu.nus.journybackend.entity.Member;
 import sg.edu.nus.journybackend.entity.Post;
 import sg.edu.nus.journybackend.exception.ResourceNotFoundException;
@@ -58,11 +59,11 @@ public class MemberController {
         try{
             UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             String username = userDetails.getUsername();
-            Long memberId = memberService.findByUsername(username).getMemberId();
+            Long memberId = memberService.retrieveMemberByUsername(username).getMemberId();
 
             memberService.followByMemberId(memberId, targetMemberId);
 
-            return new ResponseEntity<>(HttpStatus.OK);
+            return ResponseEntity.ok(String.format("MemberID: %s followed MemberID: %s", memberId, targetMemberId));
         } catch (ResourceNotFoundException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
@@ -73,7 +74,7 @@ public class MemberController {
         try{
             UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             String username = userDetails.getUsername();
-            Member member = memberService.findByUsername(username);
+            Member member = memberService.retrieveMemberByUsername(username);
 
             processMemberForResponse(member);
 
@@ -90,13 +91,28 @@ public class MemberController {
         try{
             UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             String username = userDetails.getUsername();
-            Long memberId = memberService.findByUsername(username).getMemberId();
+            Long memberId = memberService.retrieveMemberByUsername(username).getMemberId();
 
             Member persistedMember = memberService.updateMember(memberId, updatedMember);
 
             processMemberForResponse(persistedMember);
 
             return new ResponseEntity<>(persistedMember, HttpStatus.OK);
+        } catch (ResourceNotFoundException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @GetMapping("/profile/{memberId}")
+    public ResponseEntity<?> getProfile(
+            @PathVariable Long memberId
+    ) {
+        try{
+            Member member = memberService.retrieveMemberById(memberId);
+
+            processMemberForResponse(member);
+
+            return new ResponseEntity<>(member, HttpStatus.OK);
         } catch (ResourceNotFoundException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
@@ -115,6 +131,9 @@ public class MemberController {
         for (Post likedPost : member.getLikedPosts()) {
             detachPost(likedPost);
         }
+        for (Comment comment : member.getComments()) {
+            detachCommenter(comment);
+        }
         member.setLikesReceived(memberService.getLikesReceived(member.getMemberId()));
     }
 
@@ -130,5 +149,11 @@ public class MemberController {
     private void detachPost(Post post) {
         post.setCreator(null);
         post.setComments(null);
+    }
+
+    private void detachCommenter(Comment comment) {
+        Member commenter = comment.getCommenter();
+
+        detachMember(commenter);
     }
 }

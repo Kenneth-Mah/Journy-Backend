@@ -28,7 +28,7 @@ public class CommentController {
         try {
             UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             String username = userDetails.getUsername();
-            Long memberId = memberService.findByUsername(username).getMemberId();
+            Long memberId = memberService.retrieveMemberByUsername(username).getMemberId();
 
             List<Comment> comments = commentService.retrieveCommentsByMemberId(memberId);
 
@@ -56,12 +56,6 @@ public class CommentController {
         }
     }
 
-    private void detachCommenter(Comment comment) {
-        Member commenter = comment.getCommenter();
-
-        detachMember(commenter);
-    }
-
     private void detachMember(Member member) {
         member.setPassword(null);
         member.setFollowersMembers(null);
@@ -69,5 +63,11 @@ public class CommentController {
         member.setPosts(null);
         member.setLikedPosts(null);
         member.setComments(null);
+    }
+
+    private void detachCommenter(Comment comment) {
+        Member commenter = comment.getCommenter();
+
+        detachMember(commenter);
     }
 }

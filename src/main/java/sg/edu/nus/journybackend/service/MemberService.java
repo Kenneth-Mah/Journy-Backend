@@ -10,7 +10,9 @@ public interface MemberService {
 
     AuthenticationResponse authenticate(AuthenticationRequest request);
 
-    Member findByUsername(String username);
+    Member retrieveMemberByUsername(String username);
+
+    Member retrieveMemberById(Long memberId);
 
     void followByMemberId(Long memberId, Long targetMemberId);
 
