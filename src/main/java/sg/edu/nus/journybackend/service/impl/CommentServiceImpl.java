@@ -14,6 +14,7 @@ import sg.edu.nus.journybackend.repository.PostRepository;
 import sg.edu.nus.journybackend.service.CommentService;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -32,6 +33,8 @@ public class CommentServiceImpl implements CommentService {
                 .orElseThrow(() -> new ResourceNotFoundException("Post not found with id: " + postId));
         Member commenter = memberRepository.findById(memberId)
                 .orElseThrow(() -> new ResourceNotFoundException("Customer not found with Id: " + memberId));
+
+        comment.setCommentDateTime(new Date());
 
         commenter.getComments().add(comment);
         post.getComments().add(comment);
