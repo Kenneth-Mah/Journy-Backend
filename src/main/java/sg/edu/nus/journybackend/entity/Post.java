@@ -1,6 +1,5 @@
 package sg.edu.nus.journybackend.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -36,7 +35,6 @@ public class Post {
     private Integer likeCount;
 
     @ManyToOne
-    @JsonIgnore
     private Member creator;
 
     @OneToMany(mappedBy = "post")

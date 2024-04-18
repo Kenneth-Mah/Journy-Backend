@@ -7,11 +7,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import sg.edu.nus.journybackend.entity.Comment;
+import sg.edu.nus.journybackend.entity.Member;
 import sg.edu.nus.journybackend.exception.ResourceNotFoundException;
 import sg.edu.nus.journybackend.service.CommentService;
 import sg.edu.nus.journybackend.service.MemberService;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @CrossOrigin("*")
@@ -33,8 +33,7 @@ public class CommentController {
             List<Comment> comments = commentService.retrieveCommentsByMemberId(memberId);
 
             for (Comment comment : comments) {
-                comment.getCommenter().setComments(new ArrayList<>());
-                comment.getCommenter().setPosts(new ArrayList<>());
+                detachCommenter(comment);
             }
 
             return ResponseEntity.ok(comments);
@@ -55,5 +54,20 @@ public class CommentController {
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
+    }
+
+    private void detachCommenter(Comment comment) {
+        Member commenter = comment.getCommenter();
+
+        detachMember(commenter);
+    }
+
+    private void detachMember(Member member) {
+        member.setPassword(null);
+        member.setFollowersMembers(null);
+        member.setFollowingMembers(null);
+        member.setPosts(null);
+        member.setLikedPosts(null);
+        member.setComments(null);
     }
 }

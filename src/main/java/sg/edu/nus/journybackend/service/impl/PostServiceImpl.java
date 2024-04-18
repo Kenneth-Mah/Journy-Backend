@@ -47,20 +47,16 @@ public class PostServiceImpl implements PostService {
             throw new InvalidCredentialException("Member not authorized to update post with id: " + postId);
         }
 
-        //Post createdDateTime cannot be changed
         //Post id cannot be changed
+        //Post createdDateTime cannot be changed
         //Post creator cannot be changed
-        // persistedPost.setLikeCount(editedPost.getLikeCount());
         persistedPost.setKmlFile(editedPost.getKmlFile());
         persistedPost.setPostPictureURL(editedPost.getPostPictureURL());
         persistedPost.setTitle(editedPost.getTitle());
         persistedPost.setDescription(editedPost.getDescription());
         persistedPost.setBudget(editedPost.getBudget());
-        // persistedPost.setLocations(editedPost.getLocations());
-        // currPost.setCommentList(postDto.getCommentList());
+        persistedPost.setLocations(editedPost.getLocations());
         postRepository.save(persistedPost);
-
-        persistedPost.getComments().size();
 
         return persistedPost;
     }
@@ -80,8 +76,6 @@ public class PostServiceImpl implements PostService {
 
         persistedPost.setLocations(currLocations);
         postRepository.save(persistedPost);
-
-        persistedPost.getComments().size();
 
         return persistedPost;
     }
@@ -103,19 +97,13 @@ public class PostServiceImpl implements PostService {
         persistedPost.setLocations(currLocations);
         postRepository.save(persistedPost);
 
-        persistedPost.getComments().size();
-
         return persistedPost;
     }
 
     @Override
     public Post retrievePostById(Long postId) {
-        Post post = postRepository.findById(postId)
+        return postRepository.findById(postId)
                 .orElseThrow(() -> new ResourceNotFoundException("Post not found with id: " + postId));
-
-        post.getComments().size();
-
-        return post;
     }
 
     @Override
@@ -145,24 +133,12 @@ public class PostServiceImpl implements PostService {
         Member creator = memberRepository.findById(memberId)
                 .orElseThrow(() -> new ResourceNotFoundException("Member not found with id: " + memberId));
 
-        List<Post> allPosts = creator.getPosts();
-
-        for (Post post : allPosts) {
-            post.getComments().size();
-        }
-
-        return allPosts;
+        return creator.getPosts();
     }
 
     @Override
     public List<Post> retrieveAllPosts() {
-        List<Post> allPosts = postRepository.findAll();
-
-        for (Post post : allPosts) {
-            post.getComments().size();
-        }
-
-        return allPosts;
+        return postRepository.findAll();
     }
 
     @Override

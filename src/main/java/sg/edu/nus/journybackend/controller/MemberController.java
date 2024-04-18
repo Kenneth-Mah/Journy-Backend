@@ -11,6 +11,7 @@ import sg.edu.nus.journybackend.auth.AuthenticationRequest;
 import sg.edu.nus.journybackend.auth.AuthenticationResponse;
 import sg.edu.nus.journybackend.auth.RegisterRequest;
 import sg.edu.nus.journybackend.entity.Member;
+import sg.edu.nus.journybackend.entity.Post;
 import sg.edu.nus.journybackend.exception.ResourceNotFoundException;
 import sg.edu.nus.journybackend.service.MemberService;
 
@@ -103,19 +104,31 @@ public class MemberController {
 
     private void processMemberForResponse(Member member) {
         for (Member follower : member.getFollowersMembers()) {
-            removeRecursion(follower);
+            detachMember(follower);
         }
         for (Member following : member.getFollowingMembers()) {
-            removeRecursion(following);
+            detachMember(following);
+        }
+        for (Post post : member.getPosts()) {
+            detachPost(post);
+        }
+        for (Post likedPost : member.getLikedPosts()) {
+            detachPost(likedPost);
         }
         member.setLikesReceived(memberService.getLikesReceived(member.getMemberId()));
     }
 
-    private void removeRecursion(Member member) {
+    private void detachMember(Member member) {
+        member.setPassword(null);
         member.setFollowersMembers(null);
         member.setFollowingMembers(null);
         member.setPosts(null);
         member.setLikedPosts(null);
         member.setComments(null);
+    }
+
+    private void detachPost(Post post) {
+        post.setCreator(null);
+        post.setComments(null);
     }
 }

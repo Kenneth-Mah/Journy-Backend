@@ -21,7 +21,6 @@ import sg.edu.nus.journybackend.service.MemberService;
 import sg.edu.nus.journybackend.service.PostService;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 @CrossOrigin("*")
@@ -168,8 +167,7 @@ public class PostController {
 
             Comment newComment = commentService.createComment(comment, memberId, postId);
 
-            newComment.getCommenter().setComments(new ArrayList<>());
-            newComment.getCommenter().setPosts(new ArrayList<>());
+            detachCommenter(newComment);
 
             return new ResponseEntity<>(newComment, HttpStatus.CREATED);
         } catch (ResourceNotFoundException e) {
@@ -185,9 +183,7 @@ public class PostController {
             List<Comment> comments = commentService.retrieveCommentsByPostId(postId);
 
             for (Comment comment : comments) {
-                //prevent circular referencing
-                comment.getCommenter().setComments(new ArrayList<>());
-                comment.getCommenter().setPosts(new ArrayList<>());
+                detachCommenter(comment);
             }
 
             return ResponseEntity.ok(comments);
@@ -254,6 +250,7 @@ public class PostController {
     private void processPostForResponse(Post post) {
         Integer likeCount = postService.getLikeCount(post.getPostId());
         post.setLikeCount(likeCount);
+        detachMember(post.getCreator());
 
         if (post.getComments() != null) {
             for (Comment comment : post.getComments()) {
@@ -265,8 +262,15 @@ public class PostController {
     private void detachCommenter(Comment comment) {
         Member commenter = comment.getCommenter();
 
-        commenter.setPassword("");
-        commenter.setComments(new ArrayList<>());
-        commenter.setPosts(new ArrayList<>());
+        detachMember(commenter);
+    }
+
+    private void detachMember(Member member) {
+        member.setPassword(null);
+        member.setFollowersMembers(null);
+        member.setFollowingMembers(null);
+        member.setPosts(null);
+        member.setLikedPosts(null);
+        member.setComments(null);
     }
 }
