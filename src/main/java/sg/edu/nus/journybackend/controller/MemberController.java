@@ -108,6 +108,7 @@ public class MemberController {
         for (Member following : member.getFollowingMembers()) {
             removeRecursion(following);
         }
+        member.setLikesReceived(memberService.getLikesReceived(member.getMemberId()));
     }
 
     private void removeRecursion(Member member) {
