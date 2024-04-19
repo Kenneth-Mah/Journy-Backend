@@ -23,5 +23,7 @@ public interface PostService {
 
     void likePost(Long memberId, Long postId);
 
+    void unlikePost(Long memberId, Long postId);
+
     Integer getLikeCount(Long postId);
 }

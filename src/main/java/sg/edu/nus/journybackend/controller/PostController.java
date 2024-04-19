@@ -144,6 +144,23 @@ public class PostController {
         }
     }
 
+    @DeleteMapping("/{postId}/unlike")
+    public ResponseEntity<?> unlikePost(@PathVariable("postId") Long postId) {
+        try {
+            UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            String username = userDetails.getUsername();
+            Long memberId = memberService.retrieveMemberByUsername(username).getMemberId();
+
+            postService.unlikePost(memberId, postId);
+
+            return ResponseEntity.ok(String.format("PostID: %s unliked successfully", postId));
+        } catch (ResourceNotFoundException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
     @GetMapping("/all")
     public ResponseEntity<?> retrieveAllPosts() {
         List<Post> posts = postService.retrieveAllPosts();
