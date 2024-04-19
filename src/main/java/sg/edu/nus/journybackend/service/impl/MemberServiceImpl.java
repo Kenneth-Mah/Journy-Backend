@@ -77,22 +77,22 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public void followByMemberId(Long memberId, Long targetMemberId) {
+        // Check if the member is trying to follow themselves
+        if (memberId.equals(targetMemberId)) {
+            throw new InvalidFollowException("Unable to follow/unfollow yourself!");
+        }
+
+        // Check if the member is already following the target member
+        Boolean isAlreadyFollowing = memberRepository.existsByMemberIdAndFollowingMembers_MemberId(memberId, targetMemberId);
+        if (isAlreadyFollowing) {
+            throw new InvalidFollowException(String.format("MemberID: %s is already following %s, unable to follow", memberId, targetMemberId));
+        }
+
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new ResourceNotFoundException("Member with id " + memberId + " does not exist!"));
         Member targetMember = memberRepository.findById(targetMemberId)
                 .orElseThrow(() -> new ResourceNotFoundException("Member with id " + targetMemberId + " does not exist!"));
 
-        System.out.println(member.getFollowersMembers().contains(targetMember));
-
-        for (Member currMember : member.getFollowingMembers()) {
-            if (currMember.getMemberId().equals(targetMemberId)) {
-                throw new InvalidFollowException(String.format("MemberID: %s is currently following %s, unable to follow", memberId, targetMemberId));
-            }
-        }
-
-        if (memberId.equals(targetMemberId)) {
-            throw new InvalidFollowException(String.format("Unable to follow yourself!"));
-        }
 
         member.getFollowingMembers().add(targetMember);
         targetMember.getFollowersMembers().add(member);
@@ -103,26 +103,21 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public void unfollowByMemberId(Long memberId, Long targetMemberId) {
+        // Check if the member is trying to unfollow themselves
+        if (memberId.equals(targetMemberId)) {
+            throw new InvalidFollowException("Unable to follow/unfollow yourself!");
+        }
+
+        // Check if the member is not following the target member
+        Boolean isAlreadyFollowing = memberRepository.existsByMemberIdAndFollowingMembers_MemberId(memberId, targetMemberId);
+        if (!isAlreadyFollowing) {
+            throw new InvalidFollowException(String.format("MemberID: %s is not currently following %s, unable to follow", memberId, targetMemberId));
+        }
+
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new ResourceNotFoundException("Member with id " + memberId + " does not exist!"));
         Member targetMember = memberRepository.findById(targetMemberId)
                 .orElseThrow(() -> new ResourceNotFoundException("Member with id " + targetMemberId + " does not exist!"));
-
-        boolean following = false;
-
-//        if (!member.getFollowersMembers().contains(targetMember)) {
-//            throw new ResourceNotFoundException(String.format("MemberID: %s is not following %s, unable to unfollow", memberId, targetMemberId));
-//        }
-
-        for (Member currMember : member.getFollowingMembers()) {
-            if (currMember.getMemberId().equals(targetMemberId)) {
-                following = true;
-            }
-        }
-
-        if (!following) {
-            throw new InvalidFollowException(String.format("MemberID: %s is not currently following %s, unable to follow", memberId, targetMemberId));
-        }
 
         member.getFollowingMembers().remove(targetMember);
         targetMember.getFollowersMembers().remove(member);
