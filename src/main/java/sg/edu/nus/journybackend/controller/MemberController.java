@@ -69,6 +69,23 @@ public class MemberController {
         }
     }
 
+    @DeleteMapping("/unfollow/{targetMemberId}")
+    public ResponseEntity<?> unfollow(
+            @PathVariable Long targetMemberId
+    ) {
+        try{
+            UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            String username = userDetails.getUsername();
+            Long memberId = memberService.retrieveMemberByUsername(username).getMemberId();
+
+            memberService.unfollowByMemberId(memberId, targetMemberId);
+
+            return ResponseEntity.ok(String.format("MemberID: %s unfollowed MemberID: %s", memberId, targetMemberId));
+        } catch (ResourceNotFoundException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        }
+    }
+
     @GetMapping("/my-profile")
     public ResponseEntity<?> getMyProfile() {
         try{

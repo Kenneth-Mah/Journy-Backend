@@ -11,6 +11,7 @@ import sg.edu.nus.journybackend.auth.RegisterRequest;
 import sg.edu.nus.journybackend.config.JwtService;
 import sg.edu.nus.journybackend.entity.Member;
 import sg.edu.nus.journybackend.enums.Role;
+import sg.edu.nus.journybackend.exception.InvalidFollowException;
 import sg.edu.nus.journybackend.exception.ResourceNotFoundException;
 import sg.edu.nus.journybackend.repository.MemberRepository;
 import sg.edu.nus.journybackend.service.MemberService;
@@ -81,8 +82,50 @@ public class MemberServiceImpl implements MemberService {
         Member targetMember = memberRepository.findById(targetMemberId)
                 .orElseThrow(() -> new ResourceNotFoundException("Member with id " + targetMemberId + " does not exist!"));
 
+        System.out.println(member.getFollowersMembers().contains(targetMember));
+
+        for (Member currMember : member.getFollowingMembers()) {
+            if (currMember.getMemberId().equals(targetMemberId)) {
+                throw new ResourceNotFoundException(String.format("MemberID: %s is currently following %s, unable to follow", memberId, targetMemberId));
+            }
+        }
+
+        if (memberId.equals(targetMemberId)) {
+            throw new InvalidFollowException(String.format("Unable to follow yourself!"));
+        }
+
         member.getFollowingMembers().add(targetMember);
         targetMember.getFollowersMembers().add(member);
+
+        memberRepository.save(member);
+        memberRepository.save(targetMember);
+    }
+
+    @Override
+    public void unfollowByMemberId(Long memberId, Long targetMemberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new ResourceNotFoundException("Member with id " + memberId + " does not exist!"));
+        Member targetMember = memberRepository.findById(targetMemberId)
+                .orElseThrow(() -> new ResourceNotFoundException("Member with id " + targetMemberId + " does not exist!"));
+
+        boolean following = false;
+
+//        if (!member.getFollowersMembers().contains(targetMember)) {
+//            throw new ResourceNotFoundException(String.format("MemberID: %s is not following %s, unable to unfollow", memberId, targetMemberId));
+//        }
+
+        for (Member currMember : member.getFollowingMembers()) {
+            if (currMember.getMemberId().equals(targetMemberId)) {
+                following = true;
+            }
+        }
+
+        if (!following) {
+            throw new ResourceNotFoundException(String.format("MemberID: %s is not currently following %s, unable to follow", memberId, targetMemberId));
+        }
+
+        member.getFollowingMembers().remove(targetMember);
+        targetMember.getFollowersMembers().remove(member);
 
         memberRepository.save(member);
         memberRepository.save(targetMember);
