@@ -1,7 +1,5 @@
 package sg.edu.nus.journybackend.service.impl;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import sg.edu.nus.journybackend.entity.Comment;
@@ -13,15 +11,12 @@ import sg.edu.nus.journybackend.repository.MemberRepository;
 import sg.edu.nus.journybackend.repository.PostRepository;
 import sg.edu.nus.journybackend.service.CommentService;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 @Service
 @AllArgsConstructor
 public class CommentServiceImpl implements CommentService {
-    @PersistenceContext
-    private EntityManager em;
 
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
@@ -62,15 +57,7 @@ public class CommentServiceImpl implements CommentService {
         Member commenter = memberRepository.findByUsername(username)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with username: " + username));
 
-        List<Comment> allComments = commenter.getComments();
-
-        for (Comment comment : allComments) {
-            em.detach(comment);
-            comment.getCommenter().setComments(new ArrayList<>());
-            comment.getCommenter().setPosts(new ArrayList<>());
-        }
-
-        return allComments;
+        return commenter.getComments();
     }
 
     @Override

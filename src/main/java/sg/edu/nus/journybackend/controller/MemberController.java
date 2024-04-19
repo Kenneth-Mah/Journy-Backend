@@ -13,6 +13,7 @@ import sg.edu.nus.journybackend.auth.RegisterRequest;
 import sg.edu.nus.journybackend.entity.Comment;
 import sg.edu.nus.journybackend.entity.Member;
 import sg.edu.nus.journybackend.entity.Post;
+import sg.edu.nus.journybackend.exception.InvalidFollowException;
 import sg.edu.nus.journybackend.exception.ResourceNotFoundException;
 import sg.edu.nus.journybackend.service.MemberService;
 
@@ -33,7 +34,7 @@ public class MemberController {
 
             return new ResponseEntity<>(response, HttpStatus.CREATED);
         } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
         }
     }
 
@@ -64,8 +65,25 @@ public class MemberController {
             memberService.followByMemberId(memberId, targetMemberId);
 
             return ResponseEntity.ok(String.format("MemberID: %s followed MemberID: %s", memberId, targetMemberId));
-        } catch (ResourceNotFoundException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (InvalidFollowException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @DeleteMapping("/unfollow/{targetMemberId}")
+    public ResponseEntity<?> unfollow(
+            @PathVariable Long targetMemberId
+    ) {
+        try{
+            UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            String username = userDetails.getUsername();
+            Long memberId = memberService.retrieveMemberByUsername(username).getMemberId();
+
+            memberService.unfollowByMemberId(memberId, targetMemberId);
+
+            return ResponseEntity.ok(String.format("MemberID: %s unfollowed MemberID: %s", memberId, targetMemberId));
+        } catch (InvalidFollowException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -119,20 +137,30 @@ public class MemberController {
     }
 
     private void processMemberForResponse(Member member) {
-        for (Member follower : member.getFollowersMembers()) {
-            detachMember(follower);
+        if (member.getFollowersMembers() != null) {
+            for (Member follower : member.getFollowersMembers()) {
+                detachMember(follower);
+            }
         }
-        for (Member following : member.getFollowingMembers()) {
-            detachMember(following);
+        if (member.getFollowingMembers() != null) {
+            for (Member following : member.getFollowingMembers()) {
+                detachMember(following);
+            }
         }
-        for (Post post : member.getPosts()) {
-            detachPost(post);
+        if (member.getPosts() != null) {
+            for (Post post : member.getPosts()) {
+                detachPost(post);
+            }
         }
-        for (Post likedPost : member.getLikedPosts()) {
-            detachPost(likedPost);
+        if (member.getLikedPosts() != null) {
+            for (Post likedPost : member.getLikedPosts()) {
+                detachPost(likedPost);
+            }
         }
-        for (Comment comment : member.getComments()) {
-            detachCommenter(comment);
+        if (member.getComments() != null) {
+            for (Comment comment : member.getComments()) {
+                detachCommenter(comment);
+            }
         }
         member.setLikesReceived(memberService.getLikesReceived(member.getMemberId()));
     }
