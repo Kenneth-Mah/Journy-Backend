@@ -86,7 +86,7 @@ public class MemberServiceImpl implements MemberService {
 
         for (Member currMember : member.getFollowingMembers()) {
             if (currMember.getMemberId().equals(targetMemberId)) {
-                throw new ResourceNotFoundException(String.format("MemberID: %s is currently following %s, unable to follow", memberId, targetMemberId));
+                throw new InvalidFollowException(String.format("MemberID: %s is currently following %s, unable to follow", memberId, targetMemberId));
             }
         }
 
@@ -121,7 +121,7 @@ public class MemberServiceImpl implements MemberService {
         }
 
         if (!following) {
-            throw new ResourceNotFoundException(String.format("MemberID: %s is not currently following %s, unable to follow", memberId, targetMemberId));
+            throw new InvalidFollowException(String.format("MemberID: %s is not currently following %s, unable to follow", memberId, targetMemberId));
         }
 
         member.getFollowingMembers().remove(targetMember);

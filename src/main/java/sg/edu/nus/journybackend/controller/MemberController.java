@@ -13,6 +13,7 @@ import sg.edu.nus.journybackend.auth.RegisterRequest;
 import sg.edu.nus.journybackend.entity.Comment;
 import sg.edu.nus.journybackend.entity.Member;
 import sg.edu.nus.journybackend.entity.Post;
+import sg.edu.nus.journybackend.exception.InvalidFollowException;
 import sg.edu.nus.journybackend.exception.ResourceNotFoundException;
 import sg.edu.nus.journybackend.service.MemberService;
 
@@ -64,8 +65,8 @@ public class MemberController {
             memberService.followByMemberId(memberId, targetMemberId);
 
             return ResponseEntity.ok(String.format("MemberID: %s followed MemberID: %s", memberId, targetMemberId));
-        } catch (ResourceNotFoundException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (InvalidFollowException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -81,8 +82,8 @@ public class MemberController {
             memberService.unfollowByMemberId(memberId, targetMemberId);
 
             return ResponseEntity.ok(String.format("MemberID: %s unfollowed MemberID: %s", memberId, targetMemberId));
-        } catch (ResourceNotFoundException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (InvalidFollowException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
 
