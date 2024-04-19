@@ -89,6 +89,20 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
+    public void unfollowByMemberId(Long memberId, Long targetMemberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new ResourceNotFoundException("Member with id " + memberId + " does not exist!"));
+        Member targetMember = memberRepository.findById(targetMemberId)
+                .orElseThrow(() -> new ResourceNotFoundException("Member with id " + targetMemberId + " does not exist!"));
+
+        member.getFollowingMembers().remove(targetMember);
+        targetMember.getFollowersMembers().remove(member);
+
+        memberRepository.save(member);
+        memberRepository.save(targetMember);
+    }
+
+    @Override
     public Member updateMember(Long memberId, Member updatedMember) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new ResourceNotFoundException("Member with id " + memberId + " does not exist!"));
