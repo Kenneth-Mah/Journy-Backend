@@ -85,7 +85,7 @@ public class MemberServiceImpl implements MemberService {
         // Check if the member is already following the target member
         Boolean isAlreadyFollowing = memberRepository.existsByMemberIdAndFollowingMembers_MemberId(memberId, targetMemberId);
         if (isAlreadyFollowing) {
-            throw new InvalidFollowException(String.format("MemberID: %s is already following %s, unable to follow", memberId, targetMemberId));
+            throw new InvalidFollowException(String.format("MemberID: %s is already following MemberID: %s, unable to follow", memberId, targetMemberId));
         }
 
         Member member = memberRepository.findById(memberId)
@@ -111,7 +111,7 @@ public class MemberServiceImpl implements MemberService {
         // Check if the member is not following the target member
         Boolean isAlreadyFollowing = memberRepository.existsByMemberIdAndFollowingMembers_MemberId(memberId, targetMemberId);
         if (!isAlreadyFollowing) {
-            throw new InvalidFollowException(String.format("MemberID: %s is not currently following %s, unable to follow", memberId, targetMemberId));
+            throw new InvalidFollowException(String.format("MemberID: %s is not currently following MemberID: %s, unable to follow", memberId, targetMemberId));
         }
 
         Member member = memberRepository.findById(memberId)

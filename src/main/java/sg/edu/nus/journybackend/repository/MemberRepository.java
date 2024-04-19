@@ -15,4 +15,6 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     Integer countByLikedPostsCreator(Member creator);
 
     Boolean existsByMemberIdAndFollowingMembers_MemberId(Long memberId, Long targetMemberId);
+
+    Boolean existsByMemberIdAndLikedPosts_PostId(Long memberId, Long postId);
 }

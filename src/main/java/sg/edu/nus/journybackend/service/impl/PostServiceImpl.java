@@ -144,17 +144,16 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public void likePost(Long memberId, Long postId) {
+        // Check if the member has already liked the post
+        Boolean hasAlreadyLiked = memberRepository.existsByMemberIdAndLikedPosts_PostId(memberId, postId);
+        if (hasAlreadyLiked) {
+            throw new InvalidLikeException(String.format("MemberID: %s has already liked PostId: %s, unable to like", memberId, postId));
+        }
+
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new ResourceNotFoundException("Member not found with id: " + memberId));
-
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new ResourceNotFoundException("Post not found with id: " + postId));
-
-        for (Post memPost : member.getLikedPosts()) {
-            if (post.getPostId().equals(memPost.getPostId())) {
-                throw new InvalidLikeException(String.format("You have already liked PostId: %s, unable to like", postId));
-            }
-        }
 
         member.getLikedPosts().add(post);
         memberRepository.save(member);
@@ -162,24 +161,16 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public void unlikePost(Long memberId, Long postId) {
+        // Check if the member has already liked the post
+        Boolean hasAlreadyLiked = memberRepository.existsByMemberIdAndLikedPosts_PostId(memberId, postId);
+        if (!hasAlreadyLiked) {
+            throw new InvalidLikeException(String.format("MemberID: %s has not liked PostId: %s, unable to unlike", memberId, postId));
+        }
+
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new ResourceNotFoundException("Member not found with id: " + memberId));
-
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new ResourceNotFoundException("Post not found with id: " + postId));
-
-        boolean liked = false;
-
-        for (Post memPost : member.getLikedPosts()) {
-            if (post.getPostId().equals(memPost.getPostId())) {
-                liked = true;
-                break;
-            }
-        }
-
-        if (!liked) {
-            throw new InvalidLikeException(String.format("You haven't liked PostId: %s, unable to unlike", postId));
-        }
 
         member.getLikedPosts().remove(post);
         memberRepository.save(member);
