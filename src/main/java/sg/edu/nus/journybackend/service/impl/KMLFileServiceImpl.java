@@ -31,7 +31,7 @@ public class KMLFileServiceImpl implements KMLFileService {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new ResourceNotFoundException("Post not found with id: " + postId));
 
-        String filePath = FILE_PATH + "\\" + file.getOriginalFilename();
+        String filePath = FILE_PATH + "\\" + postId + file.getOriginalFilename();
         System.out.println(filePath);
 
         KMLFile kmlFile = KMLFile.builder()
